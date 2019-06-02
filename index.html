@@ -1,0 +1,36 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <title>SpreadSheet+Axios+RestFul Demo</title>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" type="text/css" href="Spread.Sheets.Release.12.1.0/css/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="Spread.Sheets.Release.12.1.0/scripts/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="Spread.Sheets.Release.12.1.0/scripts/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="Spread.Sheets.Release.12.1.0/readme/template/packages/jquery/script/default/jquery-1.11.3.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.0/axios.js"></script>
+</head>
+
+<body style='font-size:14px;'>
+    <div id="ss" style="width:100%; height:360px;border: 1px solid gray;"></div>
+    <br>
+    <div class="option-row">
+                <button class="loadExcelButton">load file from DB and create one bk file</button>
+                <button class="saveExcelButton">save edited file to DB and create one bk file</button>
+    </div>
+    <br>
+    <br>
+    <div>
+        Please Enter an ID:
+        <input type="number" min="1" value="1" class="id-input">
+    </div>
+    <div>
+        <span class="info-output"></span>
+    </div>
+    <button class="loadButton">get info data by ID from DB and render</button>
+    <button class="saveButton">save info current data to DB</button>
+</body>
+<script src="app.js"></script>
+</html>

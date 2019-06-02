@@ -1,0 +1,391 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+.sample-options {float: right;height: 100%;}
+.options-toggle {display: none;}
+@media only screen and (max-width: 768px) {
+.options-toggle {display: block !important;top: 20px;left: -30px;width: 30px;height: 30px;position: absolute;background-color: #86bd00;line-height: 30px;text-align: center;padding: 4px;box-sizing: border-box;color: #fff;}
+.options-container {width: 280px !important;overflow: auto;height: 100%;padding: 22px;box-sizing: border-box;}
+.sample-spreadsheets {width: 100% !important;height: 100%;overflow: hidden;float: left;}
+.sample-options {right: 0;padding: 0 !important;overflow: visible !important; position: absolute;box-shadow: 0 0 3px 0 rgba(0, 0, 0, .25);transition: right .25s ease-in-out;z-index: 1000;}
+.sample-options.hidden {right: -280px;}
+}
+
+.sample-tutorial {
+     position: relative;
+     height: 100%;
+     overflow: hidden;
+}
+
+.sample-spreadsheets {
+    width: calc(100% - 280px);
+    height: 100%;
+    overflow: hidden;
+    float: left;
+}
+
+.options-container {
+    float: right;
+    width: 280px;
+    padding: 12px;
+    height: 100%;
+    box-sizing: border-box;
+    background: #fbfbfb;
+    overflow: auto;
+}
+
+.option-row {
+    font-size: 14px;
+    padding: 5px;
+    margin-top: 10px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+}
+
+input {
+    padding: 4px 6px;
+}
+
+input[type=button] {
+    margin-top: 6px;
+    display: block;
+}</style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div class="sample-spreadsheets" style="overflow: auto;">
+            <label style="font:bold 10pt arial">Source:</label>
+            <div id="ss"></div>
+            <br />
+            <label style="font:bold 10pt arial">Target:</label>
+            <div id="ss1"></div>
+        </div>
+
+        <div class="sample-options">
+            <div class="options-toggle" role="button" data-click="toggle">
+                <svg fill="currentColor" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
+                </svg>
+            </div>
+
+            <div class="options-container">
+                <div class="option-row">
+                    <label>Click button to serialize the custom item in the source workbook to the target workbook.</label>
+                </div>
+                <div class="option-row">
+                    <input type="button" id="fromtoJsonBtn" value="Json Serialize" title="Serialize source spread to JSON and restore from JSON to target spread." />
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function MyCellType(color) {
+            GC.Spread.Sheets.CellTypes.Base.apply(this, arguments);
+            this.color = color || "orange";
+            this.typeName = "MyCellType";
+        }
+        MyCellType.prototype = new GC.Spread.Sheets.CellTypes.Base();
+        MyCellType.prototype.paint = function(ctx, value, x, y, width, height, style, context) {
+            var MARGIN = 5,
+                plotLeft = x + MARGIN,
+                plotWidth = width - 2 * MARGIN,
+                plotTop = y + MARGIN,
+                plotHeight = height - 2 * MARGIN,
+                halfHeight = plotHeight / 2,
+                halfWidth = plotWidth / 2;
+
+            ctx.beginPath();
+            ctx.moveTo(plotLeft, plotTop + halfHeight);
+            ctx.lineTo(plotLeft + halfWidth, plotTop);
+            ctx.lineTo(plotLeft + plotWidth, plotTop + halfHeight);
+            ctx.lineTo(plotLeft + halfWidth, plotTop + plotHeight);
+            ctx.lineTo(plotLeft, plotTop + halfHeight);
+            ctx.strokeStyle = this.color;
+            ctx.stroke();
+        };
+
+        // Define custom tag
+        function MyTag(name, age) {
+            this.name = name;
+            this.age = age;
+            this.typeName = "MyTag";
+        }
+        MyTag.prototype.toJSON = function() {
+            return {
+                typeName: this.typeName, //necessary
+                name: this.name,
+                age: this.age
+            };
+        };
+        MyTag.prototype.fromJSON = function(settings) {
+            if (settings.name !== undefined) {
+                this.name = settings.name;
+            }
+            if (settings.age !== undefined) {
+                this.age = settings.age;
+            }
+        };
+
+        var mynamespace = {};
+        (function() {
+            // Define custom function (with namespace)
+            function MyFunction() {
+                GC.Spread.CalcEngine.Functions.Function.apply(this, ["MyFunction", 0, 0]);
+                this.typeName = "mynamespace.MyFunction";
+            }
+            MyFunction.prototype = new GC.Spread.CalcEngine.Functions.Function();
+            MyFunction.prototype.evaluate = function(args) {
+                var now = new Date();
+                return now.getFullYear() + "/" + (now.getMonth() + 1) + "/" + now.getDate();
+            };
+            mynamespace.MyFunction = MyFunction;
+
+            // Define custom sparklineEx (with namespace)
+            function MySparklineEx() {
+                GC.Spread.Sheets.Sparklines.SparklineEx.apply(this, arguments);
+                this.typeName = "mynamespace.MySparklineEx";
+            }
+            MySparklineEx.prototype = new GC.Spread.Sheets.Sparklines.SparklineEx();
+            MySparklineEx.prototype.createFunction = function() {
+                var func = new GC.Spread.CalcEngine.Functions.Function("CIRCLE", 0, 0);
+                func.evaluate = function(args) {
+                    return {};
+                };
+                return func;
+            };
+            MySparklineEx.prototype.paint = function(context, value, x, y, width, height) {
+                context.beginPath();
+                context.arc(x + width / 2, y + height / 2, (Math.min(width, height) - 6) / 2, 0, Math.PI * 2);
+                context.strokeStyle = "orange";
+                context.stroke();
+            };
+            mynamespace.MySparklineEx = MySparklineEx;
+        })();
+
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"), {
+                sheetCount: 6
+            });
+            var spread2 = new GC.Spread.Sheets.Workbook(document.getElementById("ss1"), {
+                sheetCount: 1
+            });
+            initSpread(spread);
+        };
+
+        function initSpread(spread) {
+            var tagSheetIndex, rowFilterSheetIndex;
+
+            var digitMap = [{
+                    label: "Zero",
+                    value: 0
+                },
+                {
+                    label: "One",
+                    value: 1
+                },
+                {
+                    label: "Two",
+                    value: 2
+                },
+                {
+                    label: "Three",
+                    value: 3
+                },
+                {
+                    label: "Four",
+                    value: 4
+                },
+                {
+                    label: "Five",
+                    value: 5
+                },
+                {
+                    label: "Six",
+                    value: 6
+                },
+                {
+                    label: "Seven",
+                    value: 7
+                },
+                {
+                    label: "Eight",
+                    value: 8
+                },
+                {
+                    label: "Nine",
+                    value: 9
+                },
+                {
+                    label: "Ten",
+                    value: 10
+                }
+            ];
+
+            // Define custom formatter (private in function)
+            function MyFormatter(format, cultureName) {
+                GC.Spread.Formatter.FormatterBase.apply(this, arguments);
+                this.typeName = "MyFormatter";
+            }
+            MyFormatter.prototype = new GC.Spread.Formatter.FormatterBase();
+            MyFormatter.prototype.parse = function(str) {
+                var labels = digitMap.map(function(item) {
+                        return item.label;
+                    }),
+                    index = labels.indexOf(str);
+
+                if (index === -1) {
+                    index = parseInt(str);
+                }
+
+                return (index < 0 || index > 10) ? NaN : index;
+            };
+            MyFormatter.prototype.format = function(obj, conditionalForeColor) {
+                var numbers = digitMap.map(function(item) {
+                        return item.value
+                    }),
+                    index = numbers.indexOf(obj);
+
+                return index === -1 ? "NaN" : digitMap[index].label;
+            };
+
+            // Define custom row filter (private in function)
+            function MyRowFilter(range) {
+                GC.Spread.Sheets.Filter.RowFilterBase.apply(this, arguments);
+                this.typeName = "MyRowFilter";
+            }
+            MyRowFilter.prototype = new GC.Spread.Sheets.Filter.RowFilterBase();
+            MyRowFilter.prototype.onFilter = function(args) {
+                if (args.action === GC.Spread.Sheets.Filter.FilterActionType.filter) {
+                    var sheet = args.sheet,
+                        range = args.range,
+                        filterdRows = args.filteredRows,
+                        filteredOutRows = args.filteredOutRows;
+                    if (range.row < 0) {
+                        range.row = 0;
+                        range.rowCount = sheet.getRowCount();
+                    }
+                    if (range.col < 0) {
+                        range.col = 0;
+                        range.colCount = sheet.getColumnCount();
+                    }
+                    for (var i = 0, filterdRowCount = filterdRows.length; i < filterdRowCount; i++) {
+                        var rowIndex = filterdRows[i];
+                        sheet.getRange(rowIndex, range.col, 1, range.colCount).backColor("red");
+                    }
+                }
+            };
+
+            var oldFun = GC.Spread.Sheets.getTypeFromString;
+            // Private types can not be accessed from window, so override getTypeFromString method.
+            GC.Spread.Sheets.getTypeFromString = function(typeString) {
+                switch (typeString) {
+                    case "MyFormatter":
+                        return MyFormatter;
+                    case "MyRowFilter":
+                        return MyRowFilter;
+                    default:
+                        return oldFun.apply(this, arguments);
+                }
+            };
+
+            spread.suspendPaint();
+            spread.options.allowSheetReorder = false;
+            spread.options.tabStripRatio = 0.9;
+
+            var sheet = spread.getSheet(0);
+            sheet.name("Cell type");
+            sheet.setCellType(0, 0, new MyCellType("green"));
+            sheet.setRowHeight(0, 60);
+
+            sheet = spread.getSheet(1);
+            sheet.name("Function");
+            sheet.addCustomFunction(new mynamespace.MyFunction());
+            sheet.setFormula(0, 0, "MyFunction()");
+            sheet.setColumnWidth(0, 150);
+
+            sheet = spread.getSheet(2);
+            sheet.name("Formatter");
+            sheet.setValue(0, 0, 1);
+            sheet.setFormatter(0, 0, new MyFormatter());
+            sheet.setFormula(0, 1, "A1");
+
+            sheet = spread.getSheet(3);
+            sheet.name("SparklineEx");
+            spread.addSparklineEx(new mynamespace.MySparklineEx());
+            sheet.setFormula(0, 0, "CIRCLE()");
+            sheet.setRowHeight(0, 60);
+
+            tagSheetIndex = 4;
+            sheet = spread.getSheet(tagSheetIndex);
+            sheet.name("Tag");
+            sheet.tag(new MyTag("Ivy", 24));
+            sheet.setTag(0, 0, new MyTag("Yang", 25));
+            sheet.options.allowCellOverflow = true;
+            sheet.setValue(0, 0, "Please check tag serialization result in console");
+
+            rowFilterSheetIndex = 5;
+            sheet = spread.getSheet(rowFilterSheetIndex);
+            sheet.name("Row Filter");
+            for (var r = 0; r < 3; r++) {
+                for (var c = 0; c < 3; c++) {
+                    sheet.setValue(r, c, r + c);
+                }
+            }
+
+            var filter = new MyRowFilter(new GC.Spread.Sheets.Range(0, 0, 3, 3));
+            sheet.rowFilter(filter);
+            filter.filterButtonVisible(false);
+            var condition = new GC.Spread.Sheets.ConditionalFormatting.Condition(GC.Spread.Sheets.ConditionalFormatting.ConditionType.numberCondition, {
+                compareType: GC.Spread.Sheets.ConditionalFormatting.GeneralComparisonOperators.greaterThan,
+                expected: 1
+            });
+            sheet.rowFilter().addFilterItem(0, condition);
+
+            var spread1 = GC.Spread.Sheets.findControl(document.getElementById('ss'));
+            spread1.getSheet(rowFilterSheetIndex).rowFilter().filter();
+
+            spread.resumePaint();
+
+            document.getElementById("fromtoJsonBtn").addEventListener('click', function() {
+                // ToJson
+                var spread1 = GC.Spread.Sheets.findControl(document.getElementById('ss'));
+                var jsonStr = JSON.stringify(spread1.toJSON());
+
+                // FromJson
+                var spread2 = GC.Spread.Sheets.findControl(document.getElementById('ss1'));
+                spread2.fromJSON(JSON.parse(jsonStr));
+
+                // Tag verify
+                var sheet = spread1.getSheet(tagSheetIndex);
+                console.log("Source spread:");
+                console.log("Sheet tag: ", sheet.tag());
+                console.log("Cell Tag: ", sheet.getTag(0, 0));
+
+                var sheet2 = spread2.getSheet(tagSheetIndex);
+                console.log("Target spread:");
+                console.log("Sheet tag: ", sheet2.tag());
+                console.log("Cell Tag: ", sheet2.getTag(0, 0));
+            });
+        }
+        $("[data-click=toggle]").on('click', function(e) {
+            var $target = $(e.currentTarget).parent();
+            $target.toggleClass("hidden");
+        });
+    </script>
+</body>
+
+</html>

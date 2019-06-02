@@ -1,0 +1,55 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+
+.sample-tutorial {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}</style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div id="ss" style="width:100%; height:100%;"></div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"), {
+                sheetCount: 2
+            });
+            initSpread(spread);
+        };
+
+        function initSpread(spread) {
+            var spreadNS = GC.Spread.Sheets;
+
+            var sheet = spread.getSheet(0);
+            sheet.suspendPaint();
+            var customFloatingObject = new spreadNS.FloatingObjects.FloatingObject("f0");
+            customFloatingObject.startRow(1);
+            customFloatingObject.startColumn(1);
+            customFloatingObject.endColumn(6);
+            customFloatingObject.endRow(6);
+            var div = document.createElement('div');
+            div.innerHTML = "<span>Spread.Sheets support FloatingObject.</span><div style='border: 1px dotted red; width: 80%; margin:auto;'><ul><li>I am list one.</li><li>I am list two.</li><li>I am list three.</li></ul></div>";
+            div.style.background = 'gray';
+            customFloatingObject.content(div);
+            sheet.floatingObjects.add(customFloatingObject);
+            sheet.pictures.add("f2", "../images/splogo.png", 62, 140, 180, 200);
+            sheet.resumePaint();
+        };
+    </script>
+</body>
+
+</html>

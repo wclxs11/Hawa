@@ -1,0 +1,556 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+.sample-options {float: right;height: 100%;}
+.options-toggle {display: none;}
+@media only screen and (max-width: 768px) {
+.options-toggle {display: block !important;top: 20px;left: -30px;width: 30px;height: 30px;position: absolute;background-color: #86bd00;line-height: 30px;text-align: center;padding: 4px;box-sizing: border-box;color: #fff;}
+.options-container {width: 280px !important;overflow: auto;height: 100%;padding: 22px;box-sizing: border-box;}
+.sample-spreadsheets {width: 100% !important;height: 100%;overflow: hidden;float: left;}
+.sample-options {right: 0;padding: 0 !important;overflow: visible !important; position: absolute;box-shadow: 0 0 3px 0 rgba(0, 0, 0, .25);transition: right .25s ease-in-out;z-index: 1000;}
+.sample-options.hidden {right: -280px;}
+}
+
+.sample-tutorial {
+     position: relative;
+     height: 100%;
+     overflow: hidden;
+}
+
+.sample-spreadsheets {
+    width: calc(100% - 280px);
+    height: 100%;
+    overflow: hidden;
+    float: left;
+}
+
+.options-container {
+    float: right;
+    width: 280px;
+    overflow: auto;
+    padding: 12px;
+    height: 100%;
+    box-sizing: border-box;
+    background: #fbfbfb;
+}
+.sample-options{
+    z-index: 1000;
+}
+.option {
+    padding-bottom: 6px;
+}
+
+.checkbox {
+    padding-right: 12px;
+    display: inline-block;
+}
+
+label {
+    display: inline-block;
+    min-width: 100px;
+}
+
+input, select {
+    width: 100%;
+    padding: 4px 0;
+    margin-top: 4px;
+    box-sizing: border-box;
+}
+
+input[type=checkbox] {
+    width: auto;
+    padding: 0;
+}</style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div id="ss" class="sample-spreadsheets"></div>
+        <div class="sample-options">
+            <div class="options-toggle" role="button" data-click="toggle">
+                <svg fill="currentColor" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
+                </svg>
+            </div>
+
+            <div class="options-container">
+                <div class="option-row">
+                    <h4>Select a cell with comment:
+                        <span id="commentTip"></span>
+                    </h4>
+                </div>
+
+                <div class="option-row">
+                    <div class="option">
+                        <label>Text</label>
+                        <input id="txtText" />
+                    </div>
+                    <div class="option">
+                        <label>Location</label>
+                        <input id="txtLocation" />
+                    </div>
+                    <div class="option">
+                        <label>Width</label>
+                        <input id="txtWidth" />
+                    </div>
+                </div>
+
+                <div class="option-row">
+                    <div class="option">
+                        <label>Height</label>
+                        <input id="txtHeight" />
+                    </div>
+                    <div class="option">
+                        <label>FontFamily</label>
+                        <input id="txtFontFamily" />
+                    </div>
+                    <div class="option">
+                        <label>FontStyle</label>
+                        <select id="comboBoxFontStyle">
+                            <option value="normal">normal</option>
+                            <option value="italic">italic</option>
+                            <option value="oblique">oblique</option>
+                            <option value="inherit">inherit</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="option-row">
+                    <div class="option">
+                        <label>FontSize</label>
+                        <input id="txtFontSize" />
+                    </div>
+                    <div class="option">
+                        <label>FontWeight</label>
+                        <input id="txtFontWeight" />
+                    </div>
+                    <div class="option">
+                        <label>BorderWidth</label>
+                        <input id="txtBorderWidth" />
+                    </div>
+                </div>
+
+                <div class="option-row">
+                    <div class="option">
+                        <label>BorderStyle</label>
+                        <select id="comboBoxBorderStyle">
+                            <option value="none">none</option>
+                            <option value="hidden">hidden</option>
+                            <option value="dotted">dotted</option>
+                            <option value="dashed">dashed</option>
+                            <option value="solid">solid</option>
+                            <option value="double">double</option>
+                            <option value="groove">groove</option>
+                            <option value="ridge">ridge</option>
+                            <option value="inset">inset</option>
+                            <option value="outset">outset</option>
+                        </select>
+                    </div>
+                    <div class="option">
+                        <label>BorderColor</label>
+                        <input id="txtBorderColor" />
+                    </div>
+                    <div class="option">
+                        <label>Padding</label>
+                        <input id="txtPadding" />
+                    </div>
+                </div>
+
+                <div class="option-row">
+                    <div class="option">
+                        <label>TextDecoration</label>
+                        <select id="comboBoxTextDecoration">
+                            <option value="none">none</option>
+                            <option value="underline">underline</option>
+                            <option value="overline">overline</option>
+                            <option value="linethrough">linethrough</option>
+                        </select>
+                    </div>
+                    <div class="option">
+                        <label>Opacity, %</label>
+                        <input id="txtOpacity" />
+                    </div>
+                </div>
+
+                <div class="option-row">
+                    <div class="option">
+                        <label>ForeColor</label>
+                        <input id="txtForeColor" />
+                    </div>
+                    <div class="option">
+                        <label>BackColor</label>
+                        <input id="txtBackColor" />
+                    </div>
+                    <div class="option">
+                        <label>zIndex</label>
+                        <input id="txtzIndex" />
+                    </div>
+                </div>
+
+                <div class="option-row">
+                    <div class="option">
+                        <label>Horizontal</label>
+                        <select id="comboBoxHorizontal">
+                            <option value="left">left</option>
+                            <option value="center">center</option>
+                            <option value="right">right</option>
+                            <option value="general">general</option>
+                        </select>
+                    </div>
+                    <div class="option">
+                        <label>CommentState</label>
+                        <select id="comboBoxCommentState">
+                            <option value="active">active</option>
+                            <option value="edit">edit</option>
+                            <option value="normal">normal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="option-row">
+                    <label>DisplayMode</label>
+                    <select id="comboBoxDisplayMode" style="width:auto;">
+                        <option value="hoverShown">hoverShown</option>
+                        <option value="alwaysShown">alwaysShown</option>
+                    </select>
+                </div>
+
+                <div class="option-row">
+                    <div class="checkbox">
+                        <input id="chkLocked" type="checkbox" checked />
+                        <label for="chkLocked">Locked</label>
+                    </div>
+                    <div class="checkbox">
+                        <input id="chkLockText" type="checkbox" checked />
+                        <label for="chkLockText">LockText</label>
+                    </div>
+                    <div class="checkbox">
+                        <input id="chkSheetProtect" type="checkbox" />
+                        <label for="chkSheetProtect" style="width:auto">Sheet IsProtected</label>
+                    </div>
+                    <div class="checkbox">
+                        <input id="chkSheetProtectAllow" type="checkbox" />
+                        <label for="chkSheetProtectAllow" style="width:auto; display: inline">Allow EditObjects When Sheet IsProtected</label>
+                    </div>
+
+                </div>
+
+                <div class="option-row">
+                    <div class="checkbox">
+                        <input id="chkDynamicMove" type="checkbox" checked />
+                        <label for="chkDynamicMove">DynamicMove</label>
+                    </div>
+                    <div class="checkbox">
+                        <input id="chkDynamicSize" type="checkbox" checked />
+                        <label for="chkDynamicSize">DynamicSize</label>
+                    </div>
+                    <div class="checkbox">
+                        <input id="chkShowShadow" type="checkbox" />
+                        <label for="chkShowShadow">ShowShadow</label>
+                    </div>
+                </div>
+
+                <div class="option-row">
+                    <input type="button" id="setProperty" value="Update Properties" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"));
+            spread.suspendPaint();
+            initSpread(spread);
+            spread.resumePaint();
+        };
+
+        function initSpread(spread) {
+            var spreadNS = GC.Spread.Sheets;
+            var sheet = spread.getSheet(0);
+            sheet.addSpan(1, 1, 1, 6);
+            sheet.setValue(1, 1, "there is a comment on the upper right corner of the cell");
+            sheet.comments.add(1, 1, "new comment!");
+            var activeComment = null;
+            spread.bind(spreadNS.Events.SelectionChanged, function(e, info) {
+                var sheetTmp = info.sheet;
+                var row = sheetTmp.getActiveRowIndex();
+                var col = sheetTmp.getActiveColumnIndex();
+                var comment = sheetTmp.comments.get(row, col);
+                if (comment) {
+                    _getElementById("commentTip").innerHTML = "Comment in Cell [ " + row + " : " + col + " ]";
+                    activeComment = comment;
+                } else {
+                    _getElementById("commentTip").innerHTML = "No Comment Set";
+                    activeComment = null;
+                }
+                updateLabels(sheet, activeComment);
+            });
+            _getElementById("setProperty").addEventListener('click', function() {
+                if (activeComment) {
+                    //1.
+                    if (_getElementById("txtText").value) {
+                        activeComment.text(_getElementById("txtText").value);
+                    }
+
+                    if (_getElementById("txtLocation").value) {
+                        var pos = _getElementById("txtLocation").value.split(",");
+                        activeComment.location(new spreadNS.Point(parseInt(pos[0]), parseInt(pos[1])));
+                    }
+                    if (_getElementById("txtWidth").value) {
+                        activeComment.width(parseInt(_getElementById("txtWidth").value));
+                    }
+                    if (_getElementById("txtHeight").value) {
+                        activeComment.height(parseInt(_getElementById("txtHeight").value));
+                    }
+
+                    //2.
+                    if (_getElementById("txtFontFamily").value) {
+                        activeComment.fontFamily(_getElementById("txtFontFamily").value);
+                    }
+                    if (_getElementById("txtFontSize").value) {
+                        activeComment.fontSize(_getElementById("txtFontSize").value + "pt");
+                    }
+                    if (_getElementById("txtFontWeight").value) {
+                        activeComment.fontWeight(_getElementById("txtFontWeight").value);
+                    }
+
+                    //3.
+                    if (_getElementById("txtBorderWidth").value) {
+                        activeComment.borderWidth(parseInt(_getElementById("txtBorderWidth").value));
+                    }
+
+                    if (_getElementById("txtBorderColor").value) {
+                        activeComment.borderColor(_getElementById("txtBorderColor").value);
+                    }
+                    if (_getElementById("txtPadding").value) {
+                        var para = _getElementById("txtPadding").value.split(",");
+                        if (para.length === 1) {
+                            activeComment.padding(new spreadNS.Comments.Padding(para[0]));
+                        } else {
+                            activeComment.padding(new spreadNS.Comments.Padding(para[0], para[1], para[2], para[3]));
+                        }
+                    }
+
+                    //4.
+                    if (_getElementById("txtForeColor").value) {
+                        activeComment.foreColor(_getElementById("txtForeColor").value);
+                    }
+                    if (_getElementById("txtBackColor").value) {
+                        activeComment.backColor(_getElementById("txtBackColor").value);
+                    }
+                    if (_getElementById("txtOpacity").value) {
+                        activeComment.opacity(parseFloat(_getElementById("txtOpacity").value) / 100);
+                    }
+
+                    if (_getElementById("txtzIndex").value) {
+                        activeComment.zIndex(parseInt(_getElementById("txtzIndex").value));
+                    }
+                }
+            })
+
+            _getElementById("chkLocked").addEventListener('change', function() {
+                if (activeComment) {
+                    activeComment.locked(this.checked);
+                }
+            })
+
+            _getElementById("chkLockText").addEventListener('change', function() {
+                if (activeComment) {
+                    activeComment.lockText(this.checked);
+                }
+            })
+
+            _getElementById("chkDynamicMove").addEventListener('change', function() {
+                if (activeComment) {
+                    activeComment.dynamicMove(this.checked);
+                }
+            })
+
+            _getElementById("chkDynamicSize").addEventListener('change', function() {
+                if (activeComment) {
+                    activeComment.dynamicSize(this.checked);
+                }
+            })
+
+            _getElementById("chkShowShadow").addEventListener('change', function() {
+                if (activeComment) {
+                    activeComment.showShadow(this.checked);
+                }
+            })
+
+            _getElementById("comboBoxFontStyle").addEventListener('change', function() {
+                if (activeComment) {
+                    activeComment.fontStyle(this.value);
+                }
+            })
+
+            _getElementById("comboBoxBorderStyle").addEventListener('change', function() {
+                if (activeComment) {
+                    activeComment.borderStyle(this.value);
+                }
+            })
+
+            _getElementById("comboBoxTextDecoration").addEventListener('change', function() {
+                if (activeComment) {
+
+                    var textDecoration = this.value;
+                    switch (textDecoration.toLowerCase()) {
+                        case "underline":
+                            activeComment.textDecoration(spreadNS.TextDecorationType.underline);
+                            break;
+                        case "linethrough":
+                            activeComment.textDecoration(spreadNS.TextDecorationType.lineThrough);
+                            break;
+                        case "overline":
+                            activeComment.textDecoration(spreadNS.TextDecorationType.overline);
+                            break;
+                        case "none":
+                            activeComment.textDecoration(spreadNS.TextDecorationType.none);
+                            break;
+                    }
+                }
+            })
+
+            _getElementById("comboBoxHorizontal").addEventListener('change', function() {
+                if (activeComment) {
+                    var horizontal = this.value;
+                    switch (horizontal) {
+                        case "left":
+                            activeComment.horizontalAlign(spreadNS.HorizontalAlign.left);
+                            break;
+                        case "center":
+                            activeComment.horizontalAlign(spreadNS.HorizontalAlign.center);
+                            break;
+                        case "right":
+                            activeComment.horizontalAlign(spreadNS.HorizontalAlign.right);
+                            break;
+                        case "general":
+                            activeComment.horizontalAlign(spreadNS.HorizontalAlign.left);
+                            break;
+                    }
+                }
+            })
+
+            _getElementById("comboBoxDisplayMode").addEventListener('change', function() {
+                var displayMode = this.value;
+                if (activeComment) {
+                    activeComment.displayMode(spreadNS.Comments.DisplayMode[displayMode]);
+                }
+            })
+
+            _getElementById("comboBoxCommentState").addEventListener('change', function() {
+                var commentState = this.value;
+
+                if (activeComment) {
+                    activeComment.commentState(spreadNS.Comments.CommentState[commentState]);
+                }
+            })
+
+            _getElementById("chkSheetProtect").addEventListener('change', function() {
+                var spread = GC.Spread.Sheets.findControl(document.getElementById('ss'));
+                var sheet = spread.getActiveSheet();
+                sheet.options.isProtected = this.checked;
+            });
+            _getElementById("chkSheetProtectAllow").addEventListener('change', function() {
+                var spread = GC.Spread.Sheets.findControl(document.getElementById('ss'));
+                var sheet = spread.getActiveSheet();
+                sheet.options.protectionOptions = {
+                    allowEditObjects: this.checked
+                }
+            });
+        };
+
+        function updateLabels(sheet, activeComment) {
+            _getElementById("chkSheetProtect").checked = sheet.options.isProtected;
+            _getElementById("chkSheetProtectAllow").checked = sheet.options.protectionOptions.allowEditObjects;
+            var spreadNS = GC.Spread.Sheets;
+
+            if (activeComment) {
+                _getElementById("comboBoxCommentState").value = Object.keys(spreadNS.Comments.CommentState)[activeComment.commentState() - 1];
+                _getElementById("comboBoxDisplayMode").value = Object.keys(spreadNS.Comments.DisplayMode)[activeComment.displayMode() - 1];
+                _getElementById("comboBoxHorizontal").value = _getElementById("comboBoxHorizontal").options[activeComment.horizontalAlign()].value;
+                var textDecorationType = ["underline", "linethrough", "overline", "none"];
+                _getElementById("comboBoxTextDecoration").value = textDecorationType[activeComment.textDecoration()];
+                _getElementById("comboBoxBorderStyle").value = activeComment.borderStyle();
+                _getElementById("comboBoxFontStyle").value = activeComment.fontStyle();
+                _getElementById("chkShowShadow").checked = activeComment.showShadow();
+                _getElementById("chkDynamicSize").checked = activeComment.dynamicSize();
+                _getElementById("chkDynamicMove").checked = activeComment.dynamicMove();
+                _getElementById("chkLockText").checked = activeComment.lockText();
+                _getElementById("chkLocked").checked = activeComment.locked();
+                _getElementById("txtzIndex").value = activeComment.zIndex();
+                _getElementById("txtOpacity").value = activeComment.opacity() * 100;
+                _getElementById("txtBackColor").value = activeComment.backColor();
+                _getElementById("txtForeColor").value = activeComment.foreColor();
+                var padding = activeComment.padding();
+                if (padding) {
+                    _getElementById("txtPadding").value = padding.top + "," + padding.right + "," + padding.bottom + "," + padding.left;
+                } else {
+                    _getElementById("txtPadding").value = "";;
+                }
+                _getElementById("txtBorderColor").value = activeComment.borderColor();
+                _getElementById("txtBorderWidth").value = activeComment.borderWidth();
+                _getElementById("txtFontWeight").value = activeComment.fontWeight();
+                _getElementById("txtFontSize").value = parseInt(activeComment.fontSize(), 10);
+                _getElementById("txtFontFamily").value = activeComment.fontFamily();
+                _getElementById("txtHeight").value = activeComment.height();
+                _getElementById("txtWidth").value = activeComment.width();
+                var pos = activeComment.location();
+                if (pos) {
+                    _getElementById("txtLocation").value = pos.x + "," + pos.y;
+                } else {
+                    _getElementById("txtLocation").value = "";;
+                }
+
+                _getElementById("txtText").value = activeComment.text();
+            } else {
+                _getElementById("comboBoxCommentState").value = 'active';
+                _getElementById("comboBoxDisplayMode").value = 'hoverShown';
+                _getElementById("comboBoxHorizontal").value = 'left';
+                _getElementById("comboBoxTextDecoration").value = "underline";
+                _getElementById("comboBoxBorderStyle").value = "";;
+                _getElementById("comboBoxFontStyle").value = "";;
+                _getElementById("chkShowShadow").checked = false;
+                _getElementById("chkDynamicSize").checked = false;
+                _getElementById("chkDynamicMove").checked = false;
+                _getElementById("chkLockText").checked = false;
+                _getElementById("chkLocked").checked = false;
+                _getElementById("txtzIndex").value = "";;
+                _getElementById("txtOpacity").value = "";;
+                _getElementById("txtBackColor").value = "";;
+                _getElementById("txtForeColor").value = "";;
+                _getElementById("txtPadding").value = "";;
+                _getElementById("txtBorderColor").value = "";;
+                _getElementById("txtBorderWidth").value = "";;
+                _getElementById("txtFontWeight").value = "";;
+                _getElementById("txtFontSize").value = "";;
+                _getElementById("txtFontFamily").value = "";;
+                _getElementById("txtHeight").value = "";;
+                _getElementById("txtWidth").value = "";;
+                _getElementById("txtLocation").value = "";;
+                _getElementById("txtText").value = "";;
+            }
+
+        }
+
+        function _getElementById(id) {
+            return document.getElementById(id);
+        }
+        $("[data-click=toggle]").on('click', function(e) {
+            var $target = $(e.currentTarget).parent();
+            $target.toggleClass("hidden");
+        });
+    </script>
+</body>
+
+</html>

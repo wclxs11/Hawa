@@ -1,0 +1,72 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+
+.sample-tutorial {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}</style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div id="ss" style="width:100%;height:100%"></div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"));
+            initSpread(spread);
+        };
+
+        function initSpread(spread) {
+            var spreadNS = GC.Spread.Sheets;
+            var sheet = spread.sheets[0];
+            sheet.suspendPaint();
+
+            sheet.addSpan(0, 0, 1, 5);
+            sheet.getCell(0, 0).value("Particulate Levels in Rainfall").font("20px Arial").hAlign(spreadNS.HorizontalAlign.center).vAlign(spreadNS.VerticalAlign.center);
+            var table1 = sheet.tables.add("table1", 1, 0, 10, 5, spreadNS.Tables.TableThemes.medium4);
+            table1.rowFilter().filterButtonVisible(false);
+            sheet.setArray(1, 0, [
+                ["Daily rainfall", "Particulate level", "Daily rainfall1", "Temperature", "Diagram"],
+                [2.0, 100, 2.0, 15],
+                [2.5, 130, 2.5, 12],
+                [3.0, 120, 3.0, 11],
+                [3.5, 140, 3.5, 9],
+                [4.0, 120, 4.0, 10],
+                [4.5, 110, 4.5, 10],
+                [5.0, 110, 5.0, 9],
+                [5.5, 105, 5.5, 9],
+                [6.0, 100, 6.0, 8]
+            ]);
+            sheet.addSpan(2, 4, 9, 1);
+            sheet.setFormula(2, 4, '=SCATTERSPARKLINE(A3:B11,C3:D11,,,,,AVERAGE(B3:B11),AVERAGE(A3:A11),,,,,TRUE,TRUE,TRUE,"green",,TRUE)');
+            sheet.setRowHeight(0, 50);
+            for (var i = 1; i < 11; i++) {
+                sheet.setRowHeight(i, 25);
+            }
+            sheet.setColumnWidth(0, 120);
+            sheet.setColumnWidth(1, 120);
+            sheet.setColumnWidth(2, 120);
+            sheet.setColumnWidth(3, 120);
+            sheet.setColumnWidth(4, 200);
+
+            sheet.setColumnVisible(2, false);
+
+            sheet.resumePaint();
+        };
+    </script>
+</body>
+
+</html>

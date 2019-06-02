@@ -1,0 +1,147 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/plugins/gc.spread.sheets.charts.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <script src="data/stockChartData.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+
+.sample-tutorial {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}</style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div id="ss" class="sample-tutorial"></div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"), {
+                sheetCount: 4
+            });
+            initSpread(spread);
+        };
+
+        var data = dataSource;
+
+        function initSpread(spread) {
+            spread.suspendPaint();
+            spread.options.tabStripRatio = 0.7;
+            var chartTypeStr = ['stockHLC', 'stockOHLC', 'stockVHLC', 'stockVOHLC'];
+            var chartType = [{
+                type: GC.Spread.Sheets.Charts.ChartType.stockHLC,
+                desc: chartTypeStr[0],
+            }, {
+                type: GC.Spread.Sheets.Charts.ChartType.stockOHLC,
+                desc: chartTypeStr[1],
+            }, {
+                type: GC.Spread.Sheets.Charts.ChartType.stockVHLC,
+                desc: chartTypeStr[2],
+            }, {
+                type: GC.Spread.Sheets.Charts.ChartType.stockVOHLC,
+                desc: chartTypeStr[3],
+            }];
+            var sheets = spread.sheets;
+
+            var sheet = sheets[sheets.length - 1];
+            sheet.suspendPaint();
+            sheet.name(chartTypeStr[chartTypeStr.length - 1]);
+            sheet.setArray(0, 0, data);
+            sheet.getRange(0, 0, 61, 1).formatter('dd/mm/yyyy');
+            sheet.setColumnWidth(0, 80);
+            sheet.resumePaint();
+
+            initStockHLCChartSheetData(sheets[0], chartTypeStr[0]);
+            initStockOHLCChartSheetData(sheets[1], chartTypeStr[1]);
+            initStockVHLCChartSheetData(sheets[2], chartTypeStr[2]);
+
+            for (var i = 0; i < chartType.length; i++) {
+                sheet = sheets[i];
+                initChart(sheet, chartType[i].type, i); //add chart
+            }
+            spread.resumePaint();
+        }
+
+        function initStockHLCChartSheetData(sheet, sheetName) {
+            sheet.name(sheetName);
+            sheet.suspendPaint();
+            var formula = "='stockVOHLC'!";
+            for (var i = 0; i < data.length - 1; i++) {
+                var formula1 = formula + 'A' + (i + 1);
+                sheet.setFormula(i, 0, formula1);
+                formula1 = formula + 'D' + (i + 1);
+                sheet.setFormula(i, 1, formula1);
+                formula1 = formula + 'E' + (i + 1);
+                sheet.setFormula(i, 2, formula1);
+                formula1 = formula + 'F' + (i + 1);
+                sheet.setFormula(i, 3, formula1);
+            }
+            sheet.getRange(0, 0, 61, 1).formatter('dd/mm/yyyy');
+            sheet.setColumnWidth(0, 80);
+            sheet.resumePaint();
+        }
+
+        function initStockOHLCChartSheetData(sheet, sheetName) {
+            sheet.name(sheetName);
+            sheet.suspendPaint();
+            var formula = "='stockVOHLC'!";
+            for (var i = 0; i < data.length - 1; i++) {
+                var formula1 = formula + 'A' + (i + 1);
+                sheet.setFormula(i, 0, formula1);
+                formula1 = formula + 'C' + (i + 1);
+                sheet.setFormula(i, 1, formula1);
+                formula1 = formula + 'D' + (i + 1);
+                sheet.setFormula(i, 2, formula1);
+                formula1 = formula + 'E' + (i + 1);
+                sheet.setFormula(i, 3, formula1);
+                formula1 = formula + 'F' + (i + 1);
+                sheet.setFormula(i, 4, formula1);
+            }
+            sheet.getRange(0, 0, 61, 1).formatter('dd/mm/yyyy');
+            sheet.setColumnWidth(0, 80);
+            sheet.resumePaint();
+        }
+
+        function initStockVHLCChartSheetData(sheet, sheetName) {
+            sheet.name(sheetName);
+            sheet.suspendPaint();
+            var formula = "='stockVOHLC'!";
+            for (var i = 0; i < data.length - 1; i++) {
+                var formula1 = formula + 'A' + (i + 1);
+                sheet.setFormula(i, 0, formula1);
+                formula1 = formula + 'B' + (i + 1);
+                sheet.setFormula(i, 1, formula1);
+                formula1 = formula + 'D' + (i + 1);
+                sheet.setFormula(i, 2, formula1);
+                formula1 = formula + 'E' + (i + 1);
+                sheet.setFormula(i, 3, formula1);
+                formula1 = formula + 'f' + (i + 1);
+                sheet.setFormula(i, 4, formula1);
+            }
+            sheet.getRange(0, 0, 61, 1).formatter('dd/mm/yyyy');
+            sheet.setColumnWidth(0, 80);
+            sheet.resumePaint();
+        }
+
+        function initChart(sheet, chartType, index) {
+            sheet.suspendPaint();
+            var rangeIndex = ['A1:D61', 'A1:E61', 'A1:E61', 'A1:F61'];
+            //add chart
+            var chart = sheet.charts.add('Chart1', chartType, 270, 60, 615, 270, rangeIndex[index]);
+            sheet.resumePaint();
+        }
+    </script>
+</body>
+
+</html>

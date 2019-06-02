@@ -1,0 +1,124 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/plugins/gc.spread.sheets.charts.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+
+
+.sample-tutorial {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+</style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div id="ss" class="sample-tutorial"></div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"), {
+                sheetCount: 2
+            });
+            initSpread(spread);
+        };
+
+        function initSpread(spread) {
+            var sheets = spread.sheets;
+            spread.suspendPaint();
+
+            // custom sheet style
+            _setSheet(sheets);
+
+            _setData(sheets[0], 'treemapChart');
+            initTreemap(sheets[0], GC.Spread.Sheets.Charts.ChartType.treemap);
+
+            _setData(sheets[1], 'customStyle');
+            var customTreemapChart = initTreemap(sheets[1], GC.Spread.Sheets.Charts.ChartType.treemap);
+            _setDataLabels(customTreemapChart);
+            _setDataPoints(customTreemapChart);
+
+            spread.resumePaint();
+        }
+
+        function _setSheet(sheets) {
+            var columnWidths = [20, 70, 100, 80, 120];
+            for (var i = 0; i < sheets.length; i++) {
+                sheets[i].options.gridline.showHorizontalGridline = false;
+                sheets[i].options.gridline.showVerticalGridline = false;
+                sheets[i].getRange(1, 1, 17, 4)
+                    .hAlign(GC.Spread.Sheets.HorizontalAlign.center)
+                    .setBorder(new GC.Spread.Sheets.LineBorder('black', GC.Spread.Sheets.LineStyle.thin), {
+                        all: true
+                    });
+                sheets[i].getRange(1, 1, 1, 4).font('bold normal 10pt Arial');
+                for (var j = 0; j < columnWidths.length; j++) {
+                    sheets[i].setColumnWidth(j, columnWidths[j]);
+                }
+            }
+        }
+
+        function initTreemap(sheet, chartType) {
+            sheet.resumePaint();
+
+            return sheet.charts.add((sheet.name() + chartType), chartType, 400, 0, 650, 400, "B2:E18");
+        }
+
+        function _setDataLabels(chart) {
+            var dataLabels = chart.dataLabels();
+            dataLabels.color = 'white';
+            chart.dataLabels(dataLabels);
+        }
+
+        function _setDataPoints(chart) {
+            var dataPoints = chart.series().dataPoints();
+            var fillColors = ['#4472c4', '#a5a5a5', '#ffc000', '#ed7d31'];
+
+            for (var i = 0; i < fillColors.length; i++) {
+                var dataPoint = dataPoints.get(i);
+                dataPoint.fillColor = fillColors[i];
+                dataPoint.transparency = 0; // 0~1
+                dataPoints.set(i, dataPoint);
+            }
+        }
+
+        function _setData(sheet, sheetName) {
+            sheet.name(sheetName);
+            sheet.suspendPaint();
+            var dataArray = [
+                ['Region', 'Subregion', 'country', 'Population'],
+                ['Asia', 'Southern', 'India', 1354051854],
+                [, , 'Pakistan', 200813818],
+                [, , 'Bangladesh', 166368149],
+                [, , 'Others', 170220300],
+                [, 'Eastern', 'China', 1415045928],
+                [, , 'Japan', 127185332],
+                [, , 'Others', 111652273],
+                [, 'South-Eastern', , 655636576],
+                [, 'Western', , 272298399],
+                [, 'Central', , 71860465],
+                ['Africa', 'Eastern', , 433643132],
+                [, 'Western', , 381980688],
+                [, 'Northern', , 237784677],
+                [, 'Others', , 234512021],
+                ['Europe', , , 742648010],
+                ['Others', , , 1057117703]
+            ];
+            sheet.setArray(1, 1, dataArray);
+
+        }
+    </script>
+</body>
+
+</html>

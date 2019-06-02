@@ -1,0 +1,103 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+
+.sample-tutorial {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}</style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div id="ss" style="width:100%;height:100%"></div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"), {
+                sheetCount: 2
+            });
+            initNormalSheet(spread);
+            initColorRangeSheet(spread);
+        };
+
+        function initNormalSheet(spread) {
+            var sheet = spread.sheets[0];
+            sheet.suspendPaint();
+            sheet.setFormatter(-1, 0, "MM/DD/YYYY");
+            sheet.setFormatter(-1, 3, "MM/DD/YYYY");
+            sheet.setColumnWidth(0, 100, 3);
+            sheet.setColumnWidth(1, 50, 3);
+            sheet.setColumnWidth(2, 30, 3);
+            sheet.setColumnWidth(3, 100, 3);
+            sheet.setColumnWidth(4, 50, 3);
+            sheet.addSpan(3, 6, 4, 1);
+            sheet.addSpan(9, 6, 4, 1);
+            for (var row = 0; row < 31; row++) {
+                sheet.setValue(row, 0, new Date(2015, 0, row + 1));
+                sheet.setValue(row, 1, Math.round(Math.random() * 100));
+            }
+            for (var row = 0; row < 28; row++) {
+                sheet.setValue(row, 3, new Date(2015, 1, row + 1));
+                sheet.setValue(row, 4, Math.round(Math.random() * 100));
+            }
+            sheet.setFormula(3, 6, '=MonthSparkline(2015, 1, A1:B31, "lightgray", "lightgreen", "green", "darkgreen")');
+            sheet.setFormula(7, 6, '=TEXT(DATE(2015,1, 1),"mmmm")');
+
+            sheet.setFormula(9, 6, '=MONTHSPARKLINE(2015,2,D1:E31,"lightgray","lightgreen","green","darkgreen")');
+            sheet.setFormula(13, 6, '=TEXT(DATE(2015,2, 1),"mmmm")');
+
+            sheet.resumePaint();
+        }
+
+        function initColorRangeSheet(spread) {
+            var sheet = spread.sheets[1];
+            sheet.name("Use colorRange");
+            sheet.suspendPaint();
+            sheet.setFormatter(-1, 0, "MM/DD/YYYY");
+            sheet.setFormatter(-1, 3, "MM/DD/YYYY");
+            sheet.setColumnWidth(0, 100, 3);
+            sheet.setColumnWidth(1, 50, 3);
+            sheet.setColumnWidth(2, 30, 3);
+            sheet.setColumnWidth(3, 100, 3);
+            sheet.setColumnWidth(4, 50, 3);
+            sheet.addSpan(3, 6, 4, 1);
+            sheet.addSpan(9, 6, 4, 1);
+            for (var row = 0; row < 31; row++) {
+                sheet.setValue(row, 0, new Date(2015, 0, row + 1));
+                sheet.setValue(row, 1, Math.round(Math.random() * 100));
+                sheet.setValue(row, 2, getRandomColor());
+            }
+            for (var row = 0; row < 28; row++) {
+                sheet.setValue(row, 3, new Date(2015, 1, row + 1));
+                sheet.setValue(row, 4, Math.round(Math.random() * 100));
+                sheet.setValue(row, 5, getRandomColor());
+            }
+            sheet.setFormula(3, 6, '=MONTHSPARKLINE(2015,1,A1:B31,C1:C31)');
+            sheet.setFormula(7, 6, '=TEXT(DATE(2015,1, 1),"mmmm")');
+
+            sheet.setFormula(9, 6, '=MONTHSPARKLINE(2015,2,D1:E31,F1:F31)');
+            sheet.setFormula(13, 6, '=TEXT(DATE(2015,2, 1),"mmmm")');
+
+            sheet.resumePaint();
+        }
+
+        function getRandomColor() {
+            var colorList = ["lightgray", "red", "green", "darkgreen", "blue", "yellow", "orange", "pink", "gray", "black"];
+            return colorList[Math.round(Math.random() * 10)];
+        }
+    </script>
+</body>
+
+</html>

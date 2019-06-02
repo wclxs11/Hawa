@@ -1,0 +1,527 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <script src="data/aggregationSlicer.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+.sample-options {float: right;height: 100%;}
+.options-toggle {display: none;}
+@media only screen and (max-width: 768px) {
+.options-toggle {display: block !important;top: 20px;left: -30px;width: 30px;height: 30px;position: absolute;background-color: #86bd00;line-height: 30px;text-align: center;padding: 4px;box-sizing: border-box;color: #fff;}
+.options-container {width: 280px !important;overflow: auto;height: 100%;padding: 22px;box-sizing: border-box;}
+.sample-spreadsheets {width: 100% !important;height: 100%;overflow: hidden;float: left;}
+.sample-options {right: 0;padding: 0 !important;overflow: visible !important; position: absolute;box-shadow: 0 0 3px 0 rgba(0, 0, 0, .25);transition: right .25s ease-in-out;z-index: 1000;}
+.sample-options.hidden {right: -280px;}
+}
+
+.sample-tutorial {
+     position: relative;
+     height: 100%;
+     overflow: hidden;
+}
+
+.sample-spreadsheets {
+    width: calc(100% - 280px);
+    height: 100%;
+    overflow: hidden;
+    float: left;
+}
+
+.options-container {
+    float: right;
+    width: 280px;
+    padding: 12px;
+    height: 100%;
+    box-sizing: border-box;
+    background: #fbfbfb;
+    overflow: auto;
+}
+
+.option-row {
+    font-size: 14px;
+    padding: 5px;
+    margin-top: 10px;
+}
+
+input[type=button] {
+    padding: 4px 6px;
+    box-sizing: border-box;
+    margin: 6px 0;
+    display: block;
+}
+#slicer_Timeline{
+    padding-bottom: 20px;
+}
+.desc {
+    padding:2px 10px;
+    background-color:lavender;
+}
+</style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div id="ss" class="sample-spreadsheets"></div>
+        <div class="sample-options">
+            <div class="options-toggle" role="button" data-click="toggle">
+                <svg fill="currentColor" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
+                </svg>
+            </div>
+
+            <div class="options-container">
+                <div id="slicer_Timeline"></div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"));
+            initSpread(spread);
+        };
+
+        function initSpread(spread) {
+            var sd = data;
+            if (sd && sd[0].sheets) {
+                if (!spread) {
+                    return;
+                }
+                spread.suspendPaint();
+                spread.fromJSON(sd[0]);
+                spread.resumePaint();
+                addAggregationSlicer(spread);
+            }
+        }
+
+        function addAggregationSlicer(spread) {
+            var sheet = spread.getActiveSheet();
+            var table = sheet.tables.find(0, 0);
+            var dataSource = new AggregationSlicerData(sheet, table, 1, 5);
+            var timeSlicer = new TimelineSlicer(dataSource, "Date");
+            var slicerTimeLine = document.getElementById('slicer_Timeline');
+            slicerTimeLine.innerHTML = '<p style="padding:2px 10px; background-color:lavender">Click on the items in the chart slicer to filter by</p>';
+            slicerTimeLine.appendChild(timeSlicer.getDOMElement());
+            slicerTimeLine.appendChild(timeSlicer.getHeader());
+            timeSlicer.attachEventsToHeader();
+        }
+
+        var AggregationSlicerData_YEAR = 0,
+            AggregationSlicerData_MONTH = 1,
+            AggregationSlicerData_OTHER = 2;
+
+        function AggregationSlicerData(sheet, table, dataStartIndex, dataEndIndex) {
+            GC.Spread.Sheets.Slicers.TableSlicerData.call(this, table);
+            this.dateGroup = {
+                years: []
+            };
+            this.listeners = [];
+            this.dataStartIndex = dataStartIndex;
+            this.dataEndIndex = dataEndIndex;
+            this.sheet = sheet;
+        }
+        AggregationSlicerData.prototype = GC.Spread.Sheets.Slicers.TableSlicerData.prototype;
+        AggregationSlicerData.prototype.constructor = AggregationSlicerData;
+        AggregationSlicerData.prototype.buildDateGroups = function(columnName) {
+            var allDates = this.getExclusiveData(columnName);
+            var dateGroup = this.dateGroup;
+            for (var dateIndex = 0; dateIndex < allDates.length; dateIndex++) {
+                var value = this.getOneRecordValue(columnName, dateIndex);
+                var date = new Date(allDates[dateIndex]);
+                var year = date.getFullYear(),
+                    month = date.getMonth(),
+                    day = date.getDate();
+                var yearGroup = dateGroup[year];
+                if (!yearGroup) {
+                    yearGroup = dateGroup[year] = {
+                        value: 0,
+                        monthes: [],
+                        indexes: []
+                    };
+                    dateGroup.years.push(year);
+                }
+                var monthGroup = yearGroup[month];
+                if (!monthGroup) {
+                    monthGroup = yearGroup[month] = {
+                        value: 0,
+                        days: [],
+                        indexes: []
+                    };
+                    yearGroup.monthes.push(month);
+                }
+                var dayGroup = monthGroup[day];
+                if (!dayGroup) {
+                    dayGroup = monthGroup[day] = {
+                        value: 0
+                    };
+                    monthGroup.days.push(day);
+                }
+                yearGroup.value += value;
+                monthGroup.value += value;
+                dayGroup.value += value;
+                yearGroup.indexes.push(dateIndex);
+                monthGroup.indexes.push(dateIndex);
+            }
+        };
+        AggregationSlicerData.prototype.getOneRecordValue = function(columnName, exclusiveIndex) {
+            var columnIndexes = this.getRowIndexes(columnName, exclusiveIndex);
+            var sheet = this.sheet,
+                table = this.getTable(),
+                dataRangeInSheet = table.dataRange(),
+                startRow = dataRangeInSheet.row,
+                startCol = dataRangeInSheet.col,
+                result = 0;
+            for (var r = 0; r < columnIndexes.length; r++) {
+                for (var c = this.dataStartIndex; c <= this.dataEndIndex; c++) {
+                    var value = sheet.getValue(columnIndexes[r] + startRow, c + startCol);
+                    result += value;
+                }
+            }
+            return result;
+        };
+        AggregationSlicerData.prototype.getDatasByYear = function() {
+            var dateGroup = this.dateGroup;
+            var years = dateGroup.years;
+            var result = [];
+            for (var i = 0; i < years.length; i++) {
+                var year = years[i];
+                result.push({
+                    title: year,
+                    value: dateGroup[year].value
+                });
+            }
+            return result;
+        };
+        AggregationSlicerData.prototype.getMonthDatasByYear = function(year) {
+            var dateGroup = this.dateGroup;
+            var yearGroup = dateGroup[year],
+                monthes = yearGroup.monthes;
+            var result = [];
+            for (var i = 0; i < monthes.length; i++) {
+                var month = monthes[i];
+                result.push({
+                    title: month,
+                    value: yearGroup[month].value
+                });
+            }
+            return result;
+        };
+        AggregationSlicerData.prototype.getDayDatasByMonth = function(year, month) {
+            var dateGroup = this.dateGroup;
+            var yearGroup = dateGroup[year],
+                monthGroup = yearGroup[month],
+                days = monthGroup.days;
+            var result = [];
+            for (var i = 0; i < days.length; i++) {
+                var day = days[i];
+                result.push({
+                    title: day,
+                    value: monthGroup[day].value
+                });
+            }
+            return result;
+        };
+        AggregationSlicerData.prototype.filterOnYear = function(columnName, year) {
+            var yearGroup = this.dateGroup[year];
+            var indexes = yearGroup.indexes;
+            this.mode = AggregationSlicerData_YEAR;
+            this.doFilter(columnName, {
+                exclusiveRowIndexes: indexes
+            });
+            this.mode = AggregationSlicerData_OTHER;
+        };
+        AggregationSlicerData.prototype.filterOnMonth = function(columnName, year, month) {
+            var yearGroup = this.dateGroup[year];
+            var monthGroup = yearGroup[month];
+            var indexes = monthGroup.indexes;
+            this.mode = AggregationSlicerData_MONTH;
+            this.doFilter(columnName, {
+                exclusiveRowIndexes: indexes
+            });
+            this.mode = AggregationSlicerData_OTHER;
+        };
+        AggregationSlicerData.prototype.onFiltered = function(filteredIndexes, isPreview) {
+            for (var i = 0; i < this.listeners.length; i++) {
+                this.listeners[i].onFiltered({
+                    columnIndexes: filteredIndexes,
+                    isPreview: isPreview,
+                    mode: this.mode
+                });
+            }
+        };
+        AggregationSlicerData.prototype.attachListener = function(listener) {
+            this.listeners.push(listener);
+        };
+        AggregationSlicerData.prototype.dettachListener = function(listener) {
+            for (var i = 0; i < this.listeners.length; i++) {
+                if (this.listeners[i] === listener) {
+                    this.listeners.splice(i);
+                    break;
+                }
+            }
+        };
+        AggregationSlicerData.prototype.clearFilter = function(columnName) {
+            this.doUnfilter(columnName);
+        };
+
+        var Bar = (function() {
+            function Bar(title, value, x, width, disable) {
+                if (disable === void 0) {
+                    disable = false;
+                }
+                this.disable = false;
+                this.title = title;
+                this.value = value;
+                this.disable = disable;
+                this.x = x;
+                this.width = width;
+            }
+            return Bar;
+        })();
+
+        var root = null;
+        var header = null;
+
+        function TimelineSlicer(slicerData, columnName) {
+            this._canExpand = true;
+            this.mode = AggregationSlicerData_YEAR;
+            slicerData.buildDateGroups(columnName);
+            this.aggregationData = slicerData;
+            this.slicerData = slicerData;
+            this.columnName = columnName;
+            this.data = slicerData.getData(columnName);
+            this.exclusiveDatas = slicerData.getExclusiveData(columnName);
+            this.slicerData.attachListener(this);
+            this.onDataLoaded();
+        }
+        TimelineSlicer.prototype.constructor = TimelineSlicer;
+        TimelineSlicer.prototype.getDOMElement = function() {
+            return root;
+        }
+        TimelineSlicer.prototype.getHeader = function() {
+            return header;
+        }
+        TimelineSlicer.prototype.onDataLoaded = function() {
+            var self = this;
+            self.initHeader();
+            var div = document.createElement('div');
+            div.style.width = '100%';
+            div.style.height = '100%';
+            div.innerHTML = '<canvas width=250 height=200></canvas>'
+            var canvas = div.firstChild;
+            this.canvas = canvas;
+            root = div;
+
+            canvas.onmousemove = function(event) {
+                var bar = self.hitTest(event.offsetX, event.offsetY);
+                if (bar !== self.hoverBar) {
+                    self.hoverBar = bar;
+                    self.paint();
+                }
+            };
+            canvas.onmouseout = function() {
+                self.hoverBar = null;
+                self.paint();
+            };
+            canvas.onclick = function(event) {
+                var bar = self.hitTest(event.offsetX, event.offsetY);
+                if (!bar) {
+                    return;
+                }
+                if (bar !== self.selectedBar) {
+                    if (!self.canExpand()) {
+                        self.selectedBar = bar;
+                        if (self.mode === AggregationSlicerData_YEAR) {
+                            self.selectedYear = parseInt(bar.title, 10);
+                            self.aggregationData.filterOnYear(self.columnName, self.selectedYear);
+                        } else if (self.mode === AggregationSlicerData_MONTH) {
+                            self.selectedMonth = parseInt(bar.title, 10);
+                            self.aggregationData.filterOnMonth(self.columnName, self.selectedYear, self.selectedMonth);
+                        }
+                    } else {
+                        if (self.mode === AggregationSlicerData_YEAR) {
+                            self.selectedBar = null;
+                            self.selectedYear = parseInt(bar.title, 10);
+                            self.mode = AggregationSlicerData_MONTH;
+                            self.bars = self.getBars();
+                            self.aggregationData.filterOnYear(self.columnName, self.selectedYear);
+                        }
+                    }
+                    self.paint();
+                }
+            };
+            this.bars = this.getBars();
+            self.paint();
+        };
+        TimelineSlicer.prototype.initHeader = function() {
+            var headerContainer = document.createElement('div');
+            headerContainer.innerHTML = '<p class="desc">Check this to allow the user to expand the year into months.</p>' +
+                '<input id="canExpand" type="checkbox"/>' +
+                '<label for="canExpand">Allow Year to Month Aggregation</label>' +
+                '<input id="return" type="button" value="Change back to year aggregation">';
+
+            header = headerContainer;
+        };
+        TimelineSlicer.prototype.attachEventsToHeader = function() {
+            var canExpand = $("#canExpand");
+            canExpand.attr("checked", this._canExpand);
+            canExpand.onchange = function(sender, args) {
+                self._canExpand = canExpand[0].checked;
+            };
+            var returnButton = $("#return");
+            returnButton.css("width:100%");
+            var self = this;
+            returnButton.click(function() {
+                if (self.mode === AggregationSlicerData_YEAR) {
+                    return;
+                }
+                self.mode = AggregationSlicerData_YEAR;
+                self.selectedBar = null;
+                self.bars = self.getBars();
+                self.paint();
+                self.aggregationData.doUnfilter(self.columnName);
+            });
+        };
+        TimelineSlicer.prototype.hitTest = function(x, y) {
+            var bars = this.bars;
+            for (var i = 0; i < bars.length; i++) {
+                var bar = bars[i];
+                if (x >= bar.x && x < bar.x + bar.width) {
+                    return bar;
+                }
+            }
+            return null;
+        };
+        TimelineSlicer.prototype.paint = function() {
+            var context = this.canvas.getContext("2d");
+            var bars = this.bars;
+            var topValue = this.getTopValue(bars);
+            var width = this.canvas.width;
+            var height = this.canvas.height;
+            var ruleHeight = 20,
+                borderWidth = 2;
+            var maxBarHeight = height - ruleHeight;
+            context.clearRect(0, 0, width, height);
+            for (var i = 0; i < bars.length; i++) {
+                var bar = bars[i];
+                if (bar === this.selectedBar) {
+                    context.fillStyle = "#1b1b1b";
+                    context.fillRect(bar.x - borderWidth * 2, 0, bar.width + 4 * borderWidth, height);
+                    context.fillStyle = "#E1E1E1";
+                    context.fillRect(bar.x - borderWidth, 0 + borderWidth, bar.width + 2 * borderWidth, height - 2 * borderWidth);
+                } else if (bar === this.hoverBar) {
+                    context.fillStyle = "#C1C1C1";
+                    context.fillRect(bar.x - borderWidth, 0 + borderWidth, bar.width + 2 * borderWidth, height - 2 * borderWidth);
+                }
+                if (this.selectedBar && bar !== this.selectedBar) {
+                    context.fillStyle = "#003c4d";
+                } else {
+                    context.fillStyle = "#0096c0";
+                }
+                context.fillText(this.getTitle(bar.title), bar.x + borderWidth * 2, height - borderWidth * 4);
+                var barHeight = maxBarHeight * bar.value / topValue;
+                context.fillRect(bar.x, maxBarHeight - barHeight, bar.width, barHeight);
+            }
+        };
+        TimelineSlicer.prototype.getTitle = function(title) {
+            var monthes = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            if (this.mode === AggregationSlicerData_MONTH) {
+                return monthes[parseInt(title, 10)];
+            }
+            return title;
+        };
+        TimelineSlicer.prototype.getTopValue = function(bars) {
+            var max = bars[0].value;
+            for (var i = 1; i < bars.length; i++) {
+                max = max < bars[i].value ? bars[i].value : max;
+            }
+            var base = 1;
+            while (max / base >= 10) {
+                base *= 10;
+            }
+            var head = max / base;
+            return Math.ceil(head) * base;
+        };
+        TimelineSlicer.prototype.currentSelection = function() {
+            if (this.canExpand()) {
+                return -1;
+            }
+            switch (this.mode) {
+                case AggregationSlicerData_YEAR:
+                    return this.selectedYear;
+                case AggregationSlicerData_MONTH:
+                    return this.selectedMonth;
+            }
+            return -1;
+        };
+        TimelineSlicer.prototype.getBars = function() {
+            var result = [];
+            var datas;
+            if (this.mode === AggregationSlicerData_YEAR) {
+                datas = this.aggregationData.getDatasByYear();
+            } else if (this.mode === AggregationSlicerData_MONTH) {
+                datas = this.aggregationData.getMonthDatasByYear(this.selectedYear);
+            } else {
+                datas = this.aggregationData.getDayDatasByMonth(this.selectedYear, this.selectedMonth);
+            }
+            var length = datas.length;
+            var barLayout = this.getBarLayout(length);
+            var current = this.currentSelection();
+            for (var i = 0; i < length; i++) {
+                result.push(new Bar(datas[i].title + "", datas[i].value, this.getX(barLayout, length, i), barLayout.width, false));
+            }
+            return result;
+        };
+        TimelineSlicer.prototype.getX = function(layout, count, index) {
+            if (count <= 12) {
+                return layout.margin * (index + 1) + layout.width * index;
+            } else {
+                var current = this.currentSelection();
+                if (current < 5) {
+                    return layout.margin * (index + 1) + layout.width * index;
+                } else {
+                    var displayIndex = index - 5;
+                    if (displayIndex < 0) {
+                        return -100;
+                    }
+                    return layout.margin * (displayIndex + 1) + layout.width * displayIndex - layout.width / 2;
+                }
+            }
+        };
+        TimelineSlicer.prototype.canExpand = function() {
+            return this._canExpand && this.mode !== AggregationSlicerData_MONTH;
+        };
+        TimelineSlicer.prototype.getBarLayout = function(count) {
+            var fullWidth = this.canvas.width,
+                margin, width;
+            var fold = 5;
+            if (count <= 12) {
+                margin = fullWidth / ((fold + 1) * count + 1);
+                width = fold * margin;
+            } else {
+                margin = fullWidth / ((fold + 1) * 10 + 1);
+                width = fold * margin;
+            }
+            return {
+                margin: margin,
+                width: width
+            };
+        };
+        TimelineSlicer.prototype.onFiltered = function(data) {
+
+        };
+        $("[data-click=toggle]").on('click', function(e) {
+            var $target = $(e.currentTarget).parent();
+            $target.toggleClass("hidden");
+        });
+    </script>
+</body>
+
+</html>

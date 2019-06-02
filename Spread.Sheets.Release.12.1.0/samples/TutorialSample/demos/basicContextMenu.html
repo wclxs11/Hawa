@@ -1,0 +1,199 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+.sample-options {float: right;height: 100%;}
+.options-toggle {display: none;}
+@media only screen and (max-width: 768px) {
+.options-toggle {display: block !important;top: 20px;left: -30px;width: 30px;height: 30px;position: absolute;background-color: #86bd00;line-height: 30px;text-align: center;padding: 4px;box-sizing: border-box;color: #fff;}
+.options-container {width: 280px !important;overflow: auto;height: 100%;padding: 22px;box-sizing: border-box;}
+.sample-spreadsheets {width: 100% !important;height: 100%;overflow: hidden;float: left;}
+.sample-options {right: 0;padding: 0 !important;overflow: visible !important; position: absolute;box-shadow: 0 0 3px 0 rgba(0, 0, 0, .25);transition: right .25s ease-in-out;z-index: 1000;}
+.sample-options.hidden {right: -280px;}
+}
+
+.sample-tutorial {
+     position: relative;
+     height: 100%;
+     overflow: hidden;
+}
+
+.sample-spreadsheets {
+    width: calc(100% - 280px);
+    height: 100%;
+    overflow: hidden;
+    float: left;
+}
+
+.options-container {
+    float: right;
+    width: 280px;
+    padding: 12px;
+    height: 100%;
+    box-sizing: border-box;
+    background: #fbfbfb;
+    overflow: auto;
+}
+
+.option-row {
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+label {
+    margin-bottom: 6px;
+}
+
+input {
+    padding: 4px 6px;
+}
+
+input[type=button] {
+    margin-top: 6px;
+}
+p{
+    padding:2px 10px;
+   background-color:lavender;
+} </style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div id="ss" class="sample-spreadsheets"></div>
+        <div class="sample-options">
+            <div class="options-toggle" role="button" data-click="toggle">
+                <svg fill="currentColor" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
+                </svg>
+            </div>
+
+            <div class="options-container">
+                <p>Right click any cell to bring up its context menu. This menu is fully customizable.</p>
+                <div class="sp-demo-childBlock">
+                    <div id="settingsDiv">
+                        <div class="option-row">
+                            <input type="checkbox" id="allowContextMenu" checked="checked" />
+                            <label for="allowContextMenu">Show Context Menu</label>
+                        </div>
+                        <div class="option-row">
+                            <label for="currentThemes">Select Theme:</label>
+                            <select id="currentThemes">
+                                <optgroup label="Spread.Sheets">
+                                    <option value="gc.spread.sheets.12.1.0.css">Spread.Sheets</option>
+                                </optgroup>
+                                <optgroup label="Excel2013">
+                                    <option value="gc.spread.sheets.excel2013white.12.1.0.css" selected="selected">White</option>
+                                    <option value="gc.spread.sheets.excel2013lightGray.12.1.0.css">Light Gray</option>
+                                    <option value="gc.spread.sheets.excel2013darkGray.12.1.0.css">Dark Gray</option>
+                                </optgroup>
+                                <optgroup label="Excel2016">
+                                    <option value="gc.spread.sheets.excel2016colorful.12.1.0.css">Colorful</option>
+                                    <option value="gc.spread.sheets.excel2016darkGray.12.1.0.css">Dark Gray</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"), {
+                sheetCount: 2
+            });
+            initSpread(spread);
+        };
+
+        function initSpread(spread) {
+            initWorkbook(spread);
+            initEvents(spread);
+        }
+
+        function initWorkbook(spread) {
+            var sheet = spread.getActiveSheet();
+            sheet.suspendPaint();
+            var dataColumns = ["Name", "City", "Birthday", "Sex", "Weight", "Height"];
+            var data = [
+                ["bob", "NewYork", "1968/6/8", "man", "80", "180"],
+                ["Betty", "NewYork", "1972/7/3", "woman", "72", "168"],
+                ["Cherry", "Washington", "1986/2/2", "woman", "58", "161"],
+                ["Gary", "NewYork", "1964/3/2", "man", "71", "179"],
+                ["Hunk", "Washington", "1972/8/8", "man", "80", "171"],
+                ["Eva", "Washington", "1993/2/15", "woman", "71", "180"]
+            ];
+            sheet.tables.addFromDataSource("table1", 1, 1, data);
+
+            sheet.getRange(-1, 1, -1, 6).width(80);
+
+            var table = sheet.tables.findByName("table1");
+            table.setColumnName(0, dataColumns[0]);
+            table.setColumnName(1, dataColumns[1]);
+            table.setColumnName(2, dataColumns[2]);
+            table.setColumnName(3, dataColumns[3]);
+            table.setColumnName(4, dataColumns[4]);
+            table.setColumnName(5, dataColumns[5]);
+
+            var i, j, cell;
+            for (i = 9; i < 13; i++) {
+                for (j = 3; j < 7; j++) {
+                    cell = sheet.getCell(i, j);
+                    cell.text(i * j + "");
+                }
+            }
+            sheet.setFormula(9, 7, "=SUM(D10:G10)");
+            cell = sheet.getCell(9, 8);
+            cell.text("0.234");
+            cell.formatter(new GC.Spread.Formatter.GeneralFormatter("0.00%"));
+            sheet.resumePaint();
+        }
+
+        function initEvents(spread) {
+            document.getElementById('allowContextMenu').onchange = function(e) {
+                var allowContextMenu = e.target.checked;
+                spread.options.allowContextMenu = allowContextMenu;
+            };
+
+            document.getElementById('currentThemes').onchange = function() {
+                var target = document.querySelector('link[href*="gc.spread.sheets"]');
+                var href = target.attributes["href"].value,
+                    pos = href.indexOf("gc.spread.sheets"),
+                    item = href.substr(0, pos) + this.value;
+                var head = document.getElementsByTagName('head')[0];
+                head.removeChild(target)
+                if (item) {
+                    addThemeLink(item);
+                } else {
+                    spread.refresh();
+                }
+            };
+
+            function addThemeLink(href) {
+                var link = document.createElement('link');
+                link.type = "text/css";
+                link.rel = "stylesheet";
+                link.href = href;
+                link.onload = function() {
+                    spread.refresh();
+                }
+                var header = document.getElementsByTagName('head')[0];
+                header.appendChild(link);
+            }
+        }
+        $("[data-click=toggle]").on('click', function(e) {
+            var $target = $(e.currentTarget).parent();
+            $target.toggleClass("hidden");
+        });
+    </script>
+</body>
+
+</html>

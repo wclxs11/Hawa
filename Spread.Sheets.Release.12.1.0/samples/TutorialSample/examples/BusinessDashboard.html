@@ -1,0 +1,299 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/plugins/gc.spread.sheets.charts.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <script src="data/businessDashboard.js" type="text/javascript"></script>
+    <script src="data/ReportTemplate.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+
+.sample-tutorial {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+</style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div id="ss" style="width:100%;height:100%"></div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"), {
+                sheetCount: 2
+            });
+            initSpread(spread);
+        };
+
+        function initSpread(spread) {
+            spread.fromJSON(ReportTemplate);
+            var activeSheet = spread.getActiveSheet();
+            var dataSheet = spread.getSheet(1);
+
+            // Turn painting off while adding the data to the sheets
+            spread.suspendPaint();
+            var source = new GC.Spread.Sheets.Bindings.CellBindingSource(businessDashboard);
+            activeSheet.options.rowHeaderVisible = false;
+            activeSheet.options.colHeaderVisible = false;
+            activeSheet.setDataSource(source);
+            dataSheet.setDataSource(source);
+            // Add data to the revenue table and load the data in the data sheet
+            LoadRevenueTable(activeSheet)
+            FillDataSheet(dataSheet);
+            // Create the column and bar charts
+            CreateRevenueChart(activeSheet);
+            CreateBarCharts(activeSheet);
+            // Load the sparklines in the Key Metrics section of the first sheet
+            CreateKeyMetricsSection(activeSheet);
+            // Change the color of the gray area behind the sheets in Spread
+            spread.options.grayAreaBackColor = "lightgray";
+            spread.resumePaint();
+        }
+
+        function LoadRevenueTable(activeSheet) {
+            var tableColumns = [],
+                names = ['month', 'revenue', 'unitsSold'],
+                labels = ['Month', 'Revenue ($)', 'Units Sold'];
+
+            names.forEach(function(name, index) {
+                var tableColumn = new GC.Spread.Sheets.Tables.TableColumn();
+                tableColumn.name(labels[index]);
+                tableColumn.dataField(name);
+                tableColumns.push(tableColumn);
+            });
+
+            // Find the table in the sheet and add the data to it
+            var table = activeSheet.tables.findByName("RevenueTable");
+            table.autoGenerateColumns(false);
+            table.bindColumns(tableColumns);
+            table.bindingPath('revenue_chart');
+
+            activeSheet.getRange(4, 14, 12, 1).formatter("$###,0");
+        }
+
+        // Fill in the second sheet with the data from the data source
+        function FillDataSheet(dataSheet) {
+            // Add dates to metrics table
+            for (var m = 2; m <= 13; m++) {
+                dataSheet.setValue(m, 0, new Date(2018, m - 1, 28));
+                dataSheet.getCell(m, 0).formatter("MM/dd/yy")
+            }
+
+            // Create columns for metric table
+            var metricsTableColumns = [],
+                names = ['revenue', 'profit', 'expenses', 'order_size', 'customers', 'market_share'],
+                labels = ['Revenue', 'Profit', 'Expenses', 'Average Order Size', 'New Customers', 'Market Share'];
+            names.forEach(function(name, index) {
+                var tableColumn = new GC.Spread.Sheets.Tables.TableColumn();
+                tableColumn.name(labels[index]);
+                tableColumn.dataField(name);
+                metricsTableColumns.push(tableColumn);
+            });
+
+            // Add Key Metrics Table
+            var metricsTable = dataSheet.tables.add("KeyMetricsTable", 1, 1, 13, 6, GC.Spread.Sheets.Tables.TableThemes.medium1);
+            metricsTable.autoGenerateColumns(false);
+            metricsTable.bindColumns(metricsTableColumns);
+            metricsTable.bindingPath('key_metrics_by_month.values');
+
+            // Create columns for the top 5 tables
+            var top5TableColumns = [],
+                names = ['name', 'revenue'],
+                labels = ['Name', 'Revenue'];
+            names.forEach(function(name, index) {
+                var tableColumn = new GC.Spread.Sheets.Tables.TableColumn();
+                tableColumn.name(labels[index]);
+                tableColumn.dataField(name);
+                top5TableColumns.push(tableColumn);
+            });
+
+            // Add Top 5 Sales People Table
+            var top5SalesTable = dataSheet.tables.add("Top5SalesTable", 1, 8, 6, 2, GC.Spread.Sheets.Tables.TableThemes.medium1);
+            top5SalesTable.autoGenerateColumns(false);
+            top5SalesTable.bindColumns(top5TableColumns);
+            top5SalesTable.bindingPath('five_best.sales_men');
+            top5SalesTable.rowFilter().sortColumn(top5SalesTable.range().col + 1, true);
+
+            // Add Top 5 Regions Table
+            var top5RegionsTable = dataSheet.tables.add("Top5RegionsTable", 1, 11, 6, 2, GC.Spread.Sheets.Tables.TableThemes.medium1);
+            top5RegionsTable.autoGenerateColumns(false);
+            top5RegionsTable.bindColumns(top5TableColumns);
+            top5RegionsTable.bindingPath('five_best.regions');
+            top5RegionsTable.rowFilter().sortColumn(top5RegionsTable.range().col + 1, true);
+
+            // Add Top 5 Products Table
+            var top5ProductsTable = dataSheet.tables.add("Top5ProductsTable", 1, 14, 6, 2, GC.Spread.Sheets.Tables.TableThemes.medium1);
+            top5ProductsTable.autoGenerateColumns(false);
+            top5ProductsTable.bindColumns(top5TableColumns);
+            top5ProductsTable.bindingPath('five_best.products');
+            top5ProductsTable.rowFilter().sortColumn(top5ProductsTable.range().col + 1, true);
+
+            // Add Target Values for each metric
+            dataSheet.setBindingPath(14, 1, "key_metrics.revenue.target");
+            dataSheet.setBindingPath(14, 2, "key_metrics.profit.target");
+            dataSheet.setBindingPath(14, 3, "key_metrics.expenses.target");
+            dataSheet.setBindingPath(14, 4, "key_metrics.order_size.target");
+            dataSheet.setBindingPath(14, 5, "key_metrics.customers.target");
+            dataSheet.setBindingPath(14, 6, "key_metrics.market_share.target");
+        }
+
+        // This is the base function that creates a chart using the parameters
+        function BaseCreateChart(sheet, chartName, chartType, startRow, startColumn, endRow, endColumn, xValues, yValues, seriesBackColor) {
+            var chart;
+            chart = sheet.charts.add(chartName,
+                chartType, 0, 0, 1, 1,
+                GC.Spread.Sheets.Charts.RowCol.rows);
+            chart.startRow(startRow);
+            chart.startColumn(startColumn);
+            chart.endRow(endRow);
+            chart.endColumn(endColumn);
+
+            chart.startRowOffset(1);
+            chart.startColumnOffset(1);
+            chart.endRowOffset(-2);
+            chart.endColumnOffset(-2);
+            // Check if the chart is a clustered column chart
+            if (chartType == GC.Spread.Sheets.Charts.ChartType.columnClustered) {
+
+                // Add the main series to the column chart
+                chart.series().add({
+                    chartType: GC.Spread.Sheets.Charts.ChartType.columnClustered,
+                    axisGroup: GC.Spread.Sheets.Charts.AxisGroup.primary,
+                    name: "Dashboard!$O$4",
+                    xValues: xValues,
+                    yValues: yValues
+                });
+                // Add a line series to the column chart
+                chart.series().add({
+                    chartType: GC.Spread.Sheets.Charts.ChartType.lineMarkers,
+                    axisGroup: GC.Spread.Sheets.Charts.AxisGroup.secondary,
+                    name: "Dashboard!$P$4",
+                    xValues: xValues,
+                    yValues: "Dashboard!$P$5:$P$16"
+                });
+
+                // Change the format of the axes
+                var axes = chart.axes();
+                axes.primaryValue.format = "$###,0";
+                axes.secondaryValue.format = "General";
+                chart.axes(axes);
+            } else if (chartType == GC.Spread.Sheets.Charts.ChartType.barClustered) {
+
+                // Check if the chart is a clustered bar chart
+
+                // Add the main series to the bar chart
+                chart.series().add({
+                    chartType: GC.Spread.Sheets.Charts.ChartType.barClustered,
+                    axisGroup: GC.Spread.Sheets.Charts.AxisGroup.primary,
+                    xValues: xValues,
+                    yValues: yValues,
+                    backColor: seriesBackColor
+                });
+
+                // Turn the legend off for the bar charts
+                var legend = chart.legend();
+                legend.visible = false;
+                chart.legend(legend);
+
+                // Make the font size smaller for the bar charts
+                var chartArea = chart.chartArea();
+                chartArea.fontSize = 10;
+                chart.chartArea(chartArea);
+            }
+
+            // Set the title of the chart
+            if (chart != null) {
+                var title = chart.title();
+                title.text = chartName;
+                chart.title(title);
+            }
+        }
+
+        function CreateRevenueChart(activeSheet) {
+            // Create Revenue Column Chart
+            BaseCreateChart(activeSheet, 'Revenue', GC.Spread.Sheets.Charts.ChartType.columnClustered, 2, 2, 17, 11, 'Dashboard!N5:N16', 'Dashboard!O5:O16', null);
+        }
+
+        // Create Bar Charts
+        function CreateBarCharts(activeSheet) {
+            // Create Top 5 Sales People Chart
+            BaseCreateChart(activeSheet, 'Top 5 Sales People', GC.Spread.Sheets.Charts.ChartType.barClustered, 18, 2, 33, 8, 'DataSheet!I3:I7', 'DataSheet!J3:J7', undefined);
+            // Create Top 5 Regions Chart
+            BaseCreateChart(activeSheet, 'Top 5 Regions', GC.Spread.Sheets.Charts.ChartType.barClustered, 18, 8, 33, 13, 'DataSheet!L3:L7', 'DataSheet!M3:M7', 'DarkOrange');
+            // Create Top 5 Products Chart
+            BaseCreateChart(activeSheet, 'Top 5 Products', GC.Spread.Sheets.Charts.ChartType.barClustered, 18, 13, 33, 17, 'DataSheet!O3:O7', 'DataSheet!P3:P7', 'Green');
+        }
+
+        function CreateKeyMetricsSection(activeSheet) {
+            // Add Metric Names to Key Metrics Section
+            activeSheet.setBindingPath(36, 8, "key_metrics.revenue.name");
+            activeSheet.setBindingPath(37, 8, "key_metrics.profit.name");
+            activeSheet.setBindingPath(38, 8, "key_metrics.expenses.name");
+            activeSheet.setBindingPath(39, 8, "key_metrics.order_size.name");
+            activeSheet.setBindingPath(40, 8, "key_metrics.customers.name");
+            activeSheet.setBindingPath(41, 8, "key_metrics.market_share.name");
+
+            // Add Current Values to Key Metrics Section
+            activeSheet.setBindingPath(36, 15, "key_metrics.revenue.value");
+            activeSheet.setBindingPath(37, 15, "key_metrics.profit.value");
+            activeSheet.setBindingPath(38, 15, "key_metrics.expenses.value");
+            activeSheet.setBindingPath(39, 15, "key_metrics.order_size.value");
+            activeSheet.setBindingPath(40, 15, "key_metrics.customers.value");
+            activeSheet.setBindingPath(41, 15, "key_metrics.market_share.value");
+
+            // Add Sparklines to Key Metrics Section
+            CreateLineSparklines(activeSheet);
+        }
+
+        function CreateLineSparklines(activeSheet) {
+            // Set Line Sparklines in Key Metrics Section
+            var setting = new GC.Spread.Sheets.Sparklines.SparklineSetting();
+            setting.options.lineWeight = 3;
+
+            var revenueSparkline = activeSheet.setSparkline(36, 3, 'DataSheet!B3:B14', GC.Spread.Sheets.Sparklines.DataOrientation.vertical,
+                GC.Spread.Sheets.Sparklines.SparklineType.line, setting,
+                'DataSheet!A3:A14', GC.Spread.Sheets.Sparklines.DataOrientation.vertical);
+            var profitSparkline = activeSheet.setSparkline(37, 3, 'DataSheet!C3:C14', GC.Spread.Sheets.Sparklines.DataOrientation.vertical,
+                GC.Spread.Sheets.Sparklines.SparklineType.line, setting,
+                'DataSheet!A3:A14', GC.Spread.Sheets.Sparklines.DataOrientation.vertical);
+            var expensesSparkline = activeSheet.setSparkline(38, 3, 'DataSheet!D3:D14', GC.Spread.Sheets.Sparklines.DataOrientation.vertical,
+                GC.Spread.Sheets.Sparklines.SparklineType.line, setting,
+                'DataSheet!A3:A14', GC.Spread.Sheets.Sparklines.DataOrientation.vertical);
+            var averageOrderSizeSparkline = activeSheet.setSparkline(39, 3, 'DataSheet!E3:E14', GC.Spread.Sheets.Sparklines.DataOrientation.vertical,
+                GC.Spread.Sheets.Sparklines.SparklineType.line, setting,
+                'DataSheet!A3:A14', GC.Spread.Sheets.Sparklines.DataOrientation.vertical);
+            var newCustomerSparkline = activeSheet.setSparkline(40, 3, 'DataSheet!F3:F14', GC.Spread.Sheets.Sparklines.DataOrientation.vertical,
+                GC.Spread.Sheets.Sparklines.SparklineType.line, setting,
+                'DataSheet!A3:A14', GC.Spread.Sheets.Sparklines.DataOrientation.vertical);
+            var marketShareSparkline = activeSheet.setSparkline(41, 3, 'DataSheet!G3:G14', GC.Spread.Sheets.Sparklines.DataOrientation.vertical,
+                GC.Spread.Sheets.Sparklines.SparklineType.line, setting,
+                'DataSheet!A3:A14', GC.Spread.Sheets.Sparklines.DataOrientation.vertical);
+
+            // Set Variance Sparklines in Key Metrics Section
+            activeSheet.setFormula(36, 10, '=VARISPARKLINE(IF(Dashboard!P37 > DataSheet!B15, Dashboard!P37/DataSheet!B15, -Dashboard!P37/DataSheet!B15), 0, -2, 2, 0, 0.5, FALSE, "CornflowerBlue", "red", FALSE)');
+            activeSheet.setFormula(37, 10, '=VARISPARKLINE(IF(Dashboard!P38 > DataSheet!C15, Dashboard!P38/DataSheet!C15, -Dashboard!P38/DataSheet!C15), 0, -2, 2, 0, 0.5, FALSE, "CornflowerBlue", "red", FALSE)');
+            activeSheet.setFormula(38, 10, '=VARISPARKLINE(IF(Dashboard!P39 > DataSheet!D15, Dashboard!P39/DataSheet!D15, -Dashboard!P39/DataSheet!D15), 0, -2, 2, 0, 0.5, FALSE, "CornflowerBlue", "red", FALSE)');
+            activeSheet.setFormula(39, 10, '=VARISPARKLINE(IF(Dashboard!P40 > DataSheet!E15, Dashboard!P40/DataSheet!E15, -Dashboard!P40/DataSheet!E15), 0, -2, 2, 0, 0.5, FALSE, "CornflowerBlue", "red", FALSE)');
+            activeSheet.setFormula(40, 10, '=VARISPARKLINE(IF(Dashboard!P41 > DataSheet!F15, Dashboard!P41/DataSheet!F15, -Dashboard!P41/DataSheet!F15), 0, -2, 2, 0, 0.5, FALSE, "CornflowerBlue", "red", FALSE)');
+            activeSheet.setFormula(41, 10, '=VARISPARKLINE(IF(Dashboard!P42 > DataSheet!G15, Dashboard!P42/DataSheet!G15, -Dashboard!P42/DataSheet!G15), 0, -2, 2, 0, 0.5, FALSE, "CornflowerBlue", "red", FALSE)');
+
+            // Format Current values after setting sparklines
+            activeSheet.getCell(36, 15).formatter("$#,#");
+            activeSheet.getCell(37, 15).formatter("$#,#");
+            activeSheet.getCell(38, 15).formatter("$#,#");
+            activeSheet.getCell(41, 15).formatter("# %");
+        }
+    </script>
+</body>
+
+</html>

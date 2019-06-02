@@ -1,0 +1,376 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/external/echart/echarts.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <script src="data/chartSlicer.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+.sample-options {float: right;height: 100%;}
+.options-toggle {display: none;}
+@media only screen and (max-width: 768px) {
+.options-toggle {display: block !important;top: 20px;left: -30px;width: 30px;height: 30px;position: absolute;background-color: #86bd00;line-height: 30px;text-align: center;padding: 4px;box-sizing: border-box;color: #fff;}
+.options-container {width: 280px !important;overflow: auto;height: 100%;padding: 22px;box-sizing: border-box;}
+.sample-spreadsheets {width: 100% !important;height: 100%;overflow: hidden;float: left;}
+.sample-options {right: 0;padding: 0 !important;overflow: visible !important; position: absolute;box-shadow: 0 0 3px 0 rgba(0, 0, 0, .25);transition: right .25s ease-in-out;z-index: 1000;}
+.sample-options.hidden {right: -280px;}
+}
+
+.sample-tutorial {
+     position: relative;
+     height: 100%;
+     overflow: hidden;
+}
+
+.sample-spreadsheets {
+    width: calc(100% - 300px);
+    height: 100%;
+    overflow: auto;
+    float: left;
+}
+
+.options-container {
+    float: right;
+    width: 290px;
+    padding: 12px;
+    height: 100%;
+    box-sizing: border-box;
+    background: #fbfbfb;
+    overflow: auto;
+}
+
+.sample-chart {
+    width: 100%;
+    height: 48%;
+    box-sizing: border-box;
+}
+
+button {
+    background: #9fd5b7;
+    border: none;
+    border-radius: 0;
+    margin-left: 3px;
+}
+
+button:hover {
+    background: #ababab;
+    border: none;
+    border-radius: 0;
+}</style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div id="ss" class="sample-spreadsheets"></div>
+
+        <div class="sample-options">
+            <div class="options-toggle" role="button" data-click="toggle">
+                <svg fill="currentColor" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
+                </svg>
+            </div>
+
+            <div class="options-container">
+                <div id="workers" class="sample-chart"></div>
+                <div id="yearsOnList" class="sample-chart"></div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"));
+            spread.options.tabStripRatio = 0.6;
+            initSpread(spread);
+        };
+
+        function initSpread(spread) {
+            var sd = data;
+            if (sd.length > 0) {
+                if (sd) {
+                    if (!spread) {
+                        return;
+                    }
+                    var sheet = spread.getActiveSheet();
+                    initSlicer(sheet, sd);
+                }
+            }
+        }
+
+        function parseJSONToArray(datas) {
+            if (!datas || datas.length <= 0) {
+                return;
+            }
+            var columnNames = Object.keys(datas[0]),
+                keyCount = columnNames.length,
+                arrayDatas = [];
+            for (var i = 0, len = datas.length; i < len; i++) {
+                var data = datas[i];
+                if (data) {
+                    var dataItem = [];
+                    arrayDatas.push(dataItem);
+                    for (var j = 0; j < keyCount; j++) {
+                        dataItem.push(data[columnNames[j]]);
+                    }
+                }
+            }
+            return {
+                columnNames: columnNames,
+                arrayDatas: arrayDatas
+            };
+        }
+
+        function getMaxInArray(array) {
+            if (!array || array.length <= 0) {
+                return;
+            }
+            var max = array[0];
+            for (var i = 1, len = array.length; i < len; i++) {
+                if (array[i] > max) {
+                    max = array[i];
+                }
+            }
+            return max;
+        }
+
+        function ChartSlicerData(datas, columnNames) {
+            GC.Spread.Slicers.GeneralSlicerData.call(this, datas, columnNames);
+            this.listeners = [];
+        }
+        ChartSlicerData.prototype = GC.Spread.Slicers.GeneralSlicerData.prototype;
+        ChartSlicerData.prototype.constructor = ChartSlicerData;
+        ChartSlicerData.prototype.onFiltered = function() {
+            let self = this;
+            self.listeners.forEach(function(listener) {
+                listener.onFiltered({
+                    dataIndexes: self.getFilteredRowIndexes()
+                });
+                listener.refreshList();
+            })
+            for (var i = 0; i < this.listeners.length; i++) {
+
+            }
+        };
+        ChartSlicerData.prototype.attachListener = function(listener) {
+            this.listeners.push(listener);
+        };
+        ChartSlicerData.prototype.dettachListener = function(listener) {
+            for (var i = 0; i < this.listeners.length; i++) {
+                if (this.listeners[i] === listener) {
+                    this.listeners.splice(i);
+                    break;
+                }
+            }
+        };
+
+        function ChartSlicer(container, columnName, slicerData, title, legend) {
+            this.data = slicerData;
+            this.container = container;
+            this.columnName = columnName;
+            this.slicerData = slicerData;
+            this.title = title;
+            this.legend = legend;
+            this.xAxis = [];
+            this.series = [];
+            this.verticalChart = null;
+            this.slicerData.attachListener(this);
+            this.onDataLoaded();
+        }
+        ChartSlicer.prototype.constructor = ChartSlicer;
+        ChartSlicer.prototype.getXAxis = function() {
+            var xAxis = [];
+            var exclusiveData = this.slicerData.getExclusiveData(this.columnName);
+            var maxValue = getMaxInArray(exclusiveData);
+            if (this.columnName === "years on list") {
+                var xAxisCount = 6,
+                    xTick = Math.floor(maxValue / xAxisCount);
+                for (var i = 1; i <= xAxisCount; i++) {
+                    xAxis.push(xTick * i);
+                }
+            } else if (this.columnName === "workers") {
+                if (typeof maxValue === "number") {
+                    var base = 1;
+                    while (maxValue > 1) {
+                        xAxis.push(Math.pow(10, base));
+                        base++;
+                        maxValue = parseInt(maxValue / 10);
+                    }
+                }
+            }
+            return xAxis;
+        };
+        ChartSlicer.prototype.getSeriesByXAxisScope = function(xAxis, columnName, slicerData) {
+            if (!xAxis || xAxis.length <= 0 || !slicerData) {
+                return;
+            }
+            var series = [],
+                data = slicerData.getData(columnName),
+                filterdRowIndexes = slicerData.getFilteredRowIndexes();
+            for (var x = 0, len1 = xAxis.length; x < len1; x++) {
+                var scopeStart = 0;
+                if (x > 0) {
+                    scopeStart = xAxis[x - 1];
+                }
+                var scopeEnd = xAxis[x];
+                var seriesItem = 0;
+                for (var i = 0, len = filterdRowIndexes.length; i < len; i++) {
+                    var rowIndex = filterdRowIndexes[i],
+                        dataItem = data[rowIndex];
+                    if (dataItem >= scopeStart && dataItem < scopeEnd) {
+                        seriesItem++;
+                    }
+                }
+                series.push(seriesItem);
+            }
+            return series;
+        }
+        ChartSlicer.prototype.onDataLoaded = function() {
+            var self = this;
+            var chartDiv = document.createElement('div'),
+                footerDiv = document.createElement('div');
+
+            chartDiv.id = 'chart_div';
+            chartDiv.style.width = '100%';
+            chartDiv.style.height = '90%';
+
+            footerDiv.innerHTML = '<span id="text_span"></span>' +
+                '<button>Remove Filter</button>';
+            textSpan = footerDiv.firstChild;
+            removeFilter = footerDiv.lastChild;
+            removeFilter.onclick = function(e) {
+                self.slicerData.doUnfilter(self.columnName);
+                footerDiv.style.display = 'none';
+            };
+            footerDiv.style.width = '100%';
+            footerDiv.style.height = '100%';
+            footerDiv.style.display = 'none';
+
+            self.container.appendChild(chartDiv);
+            self.container.appendChild(footerDiv);
+
+            this.xAxis = this.getXAxis();
+            this.series = this.getSeriesByXAxisScope(this.xAxis, this.columnName, this.slicerData);
+
+            this.verticalChart = echarts.init(chartDiv);
+            var option = {
+                title: {
+                    subtext: this.title,
+                },
+                legend: {
+                    data: [this.legend]
+                },
+                grid: {
+                    x: "15%",
+                    width: "80%",
+                    x2: "5%",
+                    y: "30%",
+                    height: "59%",
+                    y2: "15%"
+                },
+                xAxis: [{
+                    type: 'category',
+                    data: this.xAxis,
+                    axisTick: {
+                        show: true,
+                        length: 2,
+                        lineStyle: {
+                            color: "#333",
+                            width: 1
+                        }
+                    }
+                }],
+                yAxis: [{
+                    type: 'value'
+                }],
+                series: [{
+                    name: this.legend,
+                    type: "bar",
+                    data: this.series,
+                    itemStyle: {
+                        normal: {
+                            color: "#9fd5b7",
+                            label: {
+                                show: true
+                            }
+                        },
+                        emphasis: {
+                            color: "#ababab"
+                        }
+                    }
+                }]
+            };
+            this.verticalChart.setOption(option);
+
+            function clickHandler(param) {
+                var dataIndex = param.dataIndex;
+                var startScope = 0,
+                    endScope = self.xAxis[dataIndex];
+                if (dataIndex > 0) {
+                    startScope = self.xAxis[dataIndex - 1];
+                }
+
+                var _footerDiv = self.container.lastChild;
+                _footerDiv.firstChild.innerText = self.title + ': ' + startScope + ' to ' + endScope;
+                _footerDiv.style.display = 'block';
+
+                var indexes = [];
+                var exclusiveData = self.slicerData.getExclusiveData(self.columnName);
+                for (var i = 0, len = exclusiveData.length; i < len; i++) {
+                    if (exclusiveData[i] >= startScope && exclusiveData[i] < endScope) {
+                        indexes.push(i);
+                    }
+                }
+                self.slicerData.doFilter(self.columnName, {
+                    exclusiveRowIndexes: indexes
+                });
+            }
+            this.verticalChart.on("click", clickHandler);
+        };
+        ChartSlicer.prototype.refreshList = function() {
+            this.verticalChart.setSeries([{
+                data: this.getSeriesByXAxisScope(this.verticalChart.getOption().xAxis[0].data, this.columnName, this.slicerData)
+            }]);
+        };
+        ChartSlicer.prototype.onFiltered = function(data) {
+            var spread = GC.Spread.Sheets.findControl(document.getElementById('ss'));;
+            var sheet = spread.getActiveSheet();
+            sheet.suspendPaint();
+            sheet.suspendEvent();
+            var filteredRowIndexs = data.dataIndexes;
+            for (var r = 0, len = sheet.getRowCount(); r < len; r++) {
+                sheet.setRowVisible(r, false);
+            }
+            for (var i = 0, len = filteredRowIndexs.length; i < len; i++) {
+                sheet.setRowVisible(filteredRowIndexs[i], true);
+            }
+            sheet.resumeEvent();
+            sheet.resumePaint();
+        };
+
+        function initSlicer(sheet, datas) {
+            sheet.suspendPaint();
+            sheet.name("The 2014 Inc. 5000.");
+            sheet.setDataSource(datas);
+            sheet.setColumnCount(20);
+            sheet.resumePaint();
+
+            var ret = parseJSONToArray(datas);
+            var slicerData = new ChartSlicerData(ret.arrayDatas, ret.columnNames);
+
+            var yearsOnListChart = new ChartSlicer(document.getElementById('yearsOnList'), "years on list", slicerData, "Years on the List", "Number of companies");
+            var workersChart = new ChartSlicer(document.getElementById('workers'), "workers", slicerData, "Workers", "Number of companies");
+        }
+        $("[data-click=toggle]").on('click', function(e) {
+            var $target = $(e.currentTarget).parent();
+            $target.toggleClass("hidden");
+        });
+    </script>
+</body>
+
+</html>

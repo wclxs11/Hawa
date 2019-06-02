@@ -1,0 +1,46 @@
+[
+  {
+    "title": "商业仪表",
+    "path": "BusinessDashboard"
+  },
+  {
+    "title": "财务关键业绩指标表",
+    "path": "financialKPIs"
+  },
+  {
+    "title": "应收账款帐龄分析表",
+    "path": "AgingReport"
+  },
+  {
+    "title": "收入损益表",
+    "path": "incomeStatement"
+  },
+  {
+    "title": "费用预算",
+    "path": "expensebudget"
+  },
+  {
+    "title": "1040 纳税单",
+    "path": "taxform"
+  },
+  {
+    "title": "成绩单仪表",
+    "path": "gradebookDashboard"
+  },
+  {
+    "title": "菜谱",
+    "path": "cookbook"
+  },
+  {
+    "title": "商品销售成本",
+    "path": "CostOfGoodsSold"
+  },
+  {
+    "title": "决策分析模板",
+    "path": "whatIfAnalysis"
+  },
+  {
+    "title": "形状操作流程图",
+    "path": "shapeOperationWorkflow"
+  }
+]

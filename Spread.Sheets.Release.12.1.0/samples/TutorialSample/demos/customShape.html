@@ -1,0 +1,288 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/plugins/gc.spread.sheets.shapes.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+
+.sample-tutorial {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+.sample-spreadsheets {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    float: left;
+}
+</style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div id="ss" class="sample-spreadsheets"></div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"), {
+                sheetCount: 1
+            });
+            var activeSheet = spread.getActiveSheet();
+            initDamageAreaShapes(spread);
+
+            var workbookShapes = activeSheet.shapes.all();
+            for (var s = 0; s < workbookShapes.length; s++) {
+                workbookShapes[s].allowMove(false);
+                workbookShapes[s].allowResize(false);
+            }
+            activeSheet.setRowCount(30);
+            activeSheet.setColumnCount(20);
+            activeSheet.name("Car Insurance Claim");
+        };
+
+        function initDamageAreaShapes(spread) {
+            var sheet = spread.getSheet(0);
+            spread.addSheet(1, new GC.Spread.Sheets.Worksheet("Damage_Areas"));
+
+            var startColor = "lightgreen";
+            var damageAreaSheet = spread.getSheet(1);
+            var damageAreas = ["Area", "Left", "Top", "Color"],
+                carFront = ["carFront", 50, 50, "blue"],
+                carFrontDoor = ["carFrontDoor", 197, 23, "blue"],
+                carBackDoor = ["carBackDoor", 332, 23, "blue"],
+                carBack = ["carBack", 405, 24, "blue"],
+                carFrontWheel = ["carFrontWheel", 45, 64, "blue"],
+                carBackWheel = ["carBackWheel", 361, 64, "blue"];
+            damageAreaSheet.setArray(0, 0, [
+                damageAreas,
+                carFront,
+                carFrontDoor,
+                carBackDoor,
+                carBack,
+                carFrontWheel,
+                carBackWheel
+            ]);
+
+
+            var carFrontModel = {
+                left: "=Damage_Areas!B2",
+                top: "=Damage_Areas!C2",
+                width: 157,
+                height: 85,
+                options: {
+                    fill: {
+                        type: 1,
+                        color: "=Damage_Areas!D2",
+                        transparency: "0.5"
+                    }
+                },
+                path: [
+                    [
+                        ["M", 6, 48],
+                        ["L", 21, 29],
+                        ["L", 59, 20],
+                        ["L", 136, 14],
+                        ["L", 157, 8],
+                        ["L", 150, 24],
+                        ["L", 148, 47],
+                        ["L", 150, 69],
+                        ["L", 157, 85],
+                        ["L", 140, 85],
+
+                        //Wheel well
+                        ["L", 136, 71],
+                        ["L", 128, 58],
+                        ["L", 119, 52],
+                        ["L", 107, 47],
+                        ["L", 94, 46],
+                        ["L", 83, 47],
+                        ["L", 68, 52],
+                        ["L", 60, 61],
+                        ["L", 54, 70],
+                        ["L", 50, 85],
+
+                        ["L", 21, 85],
+                        ["L", 13, 71],
+                        ["L", 2, 67],
+                        ["Z"]
+                    ]
+                ]
+            };
+            var carFrontDoorModel = {
+                left: "=Damage_Areas!B3",
+                top: "=Damage_Areas!C3",
+                width: 140,
+                height: 112,
+                options: {
+                    fill: {
+                        type: 1,
+                        color: "=Damage_Areas!D3",
+                        transparency: "0.5"
+                    }
+                },
+                path: [
+                    [
+                        ["M", 9, 36],
+                        ["L", 84, 2],
+                        ["L", 116, 0],
+                        ["L", 140, 0],
+                        ["L", 134, 74],
+                        ["L", 140, 112],
+                        ["L", 12, 112],
+                        ["L", 7, 105],
+                        ["L", 4, 96],
+                        ["L", 1, 81],
+                        ["L", 2, 64],
+                        ["L", 5, 49],
+                        ["Z"]
+                    ]
+                ]
+            };
+            var carBackDoorModel = {
+                left: "=Damage_Areas!B4",
+                top: "=Damage_Areas!C4",
+                width: 121,
+                height: 111,
+                options: {
+                    fill: {
+                        type: 1,
+                        color: "=Damage_Areas!D4",
+                        transparency: "0.5"
+                    }
+                },
+                path: [
+                    [
+                        ["M", 6, 0],
+                        ["L", 71, 1],
+                        ["L", 95, 20],
+                        ["L", 115, 44],
+                        ["L", 121, 53],
+                        ["L", 117, 62],
+                        ["L", 105, 68],
+                        ["L", 87, 85],
+                        ["L", 78, 100],
+                        ["L", 75, 111],
+                        ["L", 5, 111],
+                        ["L", 2, 97],
+                        ["L", 0, 79],
+                        ["L", 1, 61],
+                        ["L", 3, 38],
+                        ["Z"]
+                    ]
+                ]
+            };
+            var carBackModel = {
+                left: "=Damage_Areas!B5",
+                top: "=Damage_Areas!C5",
+                width: 168,
+                height: 110,
+                options: {
+                    fill: {
+                        type: 1,
+                        color: "=Damage_Areas!D5",
+                        transparency: "0.5"
+                    }
+                },
+                path: [
+                    [
+                        ["M", 0, 0],
+                        ["L", 51, 9],
+                        ["L", 110, 34],
+                        ["L", 154, 43],
+                        ["L", 163, 49],
+                        ["L", 166, 55],
+                        ["L", 152, 55],
+                        ["L", 149, 73],
+                        ["L", 168, 80],
+                        ["L", 168, 91],
+                        ["L", 164, 97],
+                        ["L", 159, 97],
+                        ["L", 153, 110],
+                        ["L", 100, 110],
+
+                        //Wheel well
+                        ["L", 96, 97],
+                        ["L", 86, 84],
+                        ["L", 69, 74],
+                        ["L", 60, 72],
+                        ["L", 50, 73],
+                        ["L", 40, 73],
+                        ["L", 32, 78],
+                        ["L", 24, 85],
+                        ["L", 19, 92],
+                        ["L", 14, 101],
+
+                        ["L", 13, 110],
+                        ["L", 3, 110],
+                        ["L", 9, 96],
+                        ["L", 17, 81],
+                        ["L", 31, 69],
+                        ["L", 44, 61],
+                        ["L", 49, 55],
+                        ["L", 44, 44],
+                        ["L", 29, 27],
+                        ["L", 14, 12],
+                        ["Z"]
+                    ]
+                ]
+            };
+
+            var carFrontWheelModel = {
+                left: "=Damage_Areas!B6",
+                top: "=Damage_Areas!C6",
+                width: 168,
+                height: 168,
+                options: {
+                    fill: {
+                        type: 1,
+                        color: "=Damage_Areas!D6",
+                        transparency: "0.5"
+                    }
+                },
+                path: [
+                    [
+                        ["A", 100, 75, 40, 0, 2 * Math.PI],
+                        ["Z"]
+                    ]
+                ]
+            };
+            var carBackWheelModel = {
+                left: "=Damage_Areas!B7",
+                top: "=Damage_Areas!C7",
+                width: 168,
+                height: 168,
+                options: {
+                    fill: {
+                        type: 1,
+                        color: "=Damage_Areas!D7",
+                        transparency: "0.5"
+                    }
+                },
+                path: [
+                    [
+                        ["A", 100, 75, 40, 0, 2 * Math.PI],
+                        ["Z"]
+                    ]
+                ]
+            };
+
+            sheet.shapes.add('carFront', carFrontModel);
+            sheet.shapes.add('carFrontDoor', carFrontDoorModel);
+            sheet.shapes.add('carBackDoor', carBackDoorModel);
+            sheet.shapes.add('carBack', carBackModel);
+            sheet.shapes.add('carFrontWheel', carFrontWheelModel);
+            sheet.shapes.add('carBackWheel', carBackWheelModel);
+        }
+    </script>
+</body>
+
+</html>

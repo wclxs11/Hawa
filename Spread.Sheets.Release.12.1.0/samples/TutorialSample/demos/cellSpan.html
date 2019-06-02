@@ -1,0 +1,284 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+.sample-options {float: right;height: 100%;}
+.options-toggle {display: none;}
+@media only screen and (max-width: 768px) {
+.options-toggle {display: block !important;top: 20px;left: -30px;width: 30px;height: 30px;position: absolute;background-color: #86bd00;line-height: 30px;text-align: center;padding: 4px;box-sizing: border-box;color: #fff;}
+.options-container {width: 280px !important;overflow: auto;height: 100%;padding: 22px;box-sizing: border-box;}
+.sample-spreadsheets {width: 100% !important;height: 100%;overflow: hidden;float: left;}
+.sample-options {right: 0;padding: 0 !important;overflow: visible !important; position: absolute;box-shadow: 0 0 3px 0 rgba(0, 0, 0, .25);transition: right .25s ease-in-out;z-index: 1000;}
+.sample-options.hidden {right: -280px;}
+}
+
+.sample-tutorial {
+     position: relative;
+     height: 100%;
+     overflow: hidden;
+}
+
+.sample-spreadsheets {
+    width: calc(100% - 280px);
+    height: 100%;
+    overflow: hidden;
+    float: left;
+}
+
+.options-container {
+    float: right;
+    width: 280px;
+    padding: 12px;
+    height: 100%;
+    box-sizing: border-box;
+    background: #fbfbfb;
+    overflow: auto;
+}
+
+.option-row {
+    font-size: 14px;
+    padding: 5px;
+    margin-top: 10px;
+}
+
+label {
+    margin-bottom: 6px;
+}
+
+input {
+    padding: 4px 6px;
+}
+
+input[type=button] {
+    margin-top: 6px;
+}</style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div id="ss" class="sample-spreadsheets"></div>
+        <div class="sample-options">
+            <div class="options-toggle" role="button" data-click="toggle">
+                <svg fill="currentColor" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
+                </svg>
+            </div>
+
+            <div class="options-container">
+                <div class="demo-options">
+                    <label>Select a block of cells and then click one of the buttons below.</label>
+                    <div class="option-row">
+                        <input type="button" value="Merge Cells" title="Merge cells in selected range to one cell" id="btnMerge" />
+                        <input type="button" value="Unmerge Cells" title="Unmerge cells in selected range back to all in a single cell" id="btnUnMerge" />
+                    </div>
+                </div>
+                <div class="demo-options" style="padding-top: 16px">
+                    <label>Check the option below to turn drag merge on and off.</label>
+                    <div class="option-row">
+                        <label>
+                            <input type="checkbox" id="allowDragMerge">
+                            Allow Drag Merge
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script type="text/javascript">
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById('ss'));
+            initSpread(spread);
+        };
+
+        function initSpread(spread) {
+            var sheet = spread.getSheet(0);
+
+            sheet.suspendPaint();
+            sheet.options.allowCellOverflow = true;
+            sheet.name('Demo');
+            initSpreadData(sheet);
+
+            sheet.resumePaint();
+
+            document.getElementById('btnMerge').addEventListener('click', function() {
+                var sheet = spread.getActiveSheet();
+
+                var sel = sheet.getSelections();
+                if (sel.length > 0) {
+                    sel = getActualCellRange(sel[sel.length - 1], sheet.getRowCount(), sheet.getColumnCount());
+                    sheet.addSpan(sel.row, sel.col, sel.rowCount, sel.colCount);
+                }
+            });
+
+            document.getElementById('btnUnMerge').addEventListener('click', function() {
+                var sheet = spread.getActiveSheet();
+
+                var sel = sheet.getSelections();
+                if (sel.length > 0) {
+                    sel = getActualCellRange(sel[sel.length - 1], sheet.getRowCount(), sheet.getColumnCount());
+                    sheet.suspendPaint();
+                    for (var i = 0; i < sel.rowCount; i++) {
+                        for (var j = 0; j < sel.colCount; j++) {
+                            sheet.removeSpan(i + sel.row, j + sel.col);
+                        }
+                    }
+                    sheet.resumePaint();
+                }
+            });
+            document.getElementById('allowDragMerge').addEventListener('change', function() {
+                spread.options.allowUserDragMerge = document.getElementById('allowDragMerge').checked;
+            });
+        }
+
+        function getActualCellRange(cellRange, rowCount, columnCount) {
+            var spreadNS = GC.Spread.Sheets;
+            if (cellRange.row == -1 && cellRange.col == -1) {
+                return new spreadNS.Range(0, 0, rowCount, columnCount);
+            } else if (cellRange.row == -1) {
+                return new spreadNS.Range(0, cellRange.col, rowCount, cellRange.colCount);
+            } else if (cellRange.col == -1) {
+                return new spreadNS.Range(cellRange.row, 0, cellRange.rowCount, columnCount);
+            }
+
+            return cellRange;
+        }
+
+        function initSpreadData(sheet) {
+            var spreadNS = GC.Spread.Sheets;
+            sheet.addSpan(1, 1, 1, 3);
+            sheet.setValue(1, 1, 'Store');
+            sheet.addSpan(1, 4, 1, 7);
+            sheet.setValue(1, 4, 'Goods');
+            sheet.addSpan(2, 1, 1, 2);
+            sheet.setValue(2, 1, 'Area');
+            sheet.addSpan(2, 3, 2, 1);
+            sheet.setValue(2, 3, 'ID');
+            sheet.addSpan(2, 4, 1, 2);
+            sheet.setValue(2, 4, 'Fruits');
+            sheet.addSpan(2, 6, 1, 2);
+            sheet.setValue(2, 6, 'Vegetables');
+            sheet.addSpan(2, 8, 1, 2);
+            sheet.setValue(2, 8, 'Foods');
+            sheet.addSpan(2, 10, 2, 1);
+            sheet.setValue(2, 10, 'Total');
+
+            sheet.setValue(3, 1, 'State');
+            sheet.setValue(3, 2, 'City');
+            sheet.setValue(3, 4, 'Grape');
+            sheet.setValue(3, 5, 'Apple');
+            sheet.setValue(3, 6, 'Potato');
+            sheet.setValue(3, 7, 'Tomato');
+            sheet.setValue(3, 8, 'SandWich');
+            sheet.setValue(3, 9, 'Hamburger');
+
+            sheet.addSpan(4, 1, 7, 1);
+            sheet.addSpan(4, 2, 3, 1);
+            sheet.addSpan(7, 2, 3, 1);
+            sheet.addSpan(10, 2, 1, 2);
+            sheet.setValue(10, 2, 'Sub Total:');
+            sheet.addSpan(11, 1, 7, 1);
+            sheet.addSpan(11, 2, 3, 1);
+            sheet.addSpan(14, 2, 3, 1);
+            sheet.addSpan(17, 2, 1, 2);
+            sheet.setValue(17, 2, 'Sub Total:');
+            sheet.addSpan(18, 1, 1, 3);
+            sheet.setValue(18, 1, 'Total:');
+
+            sheet.setValue(4, 1, 'NC');
+            sheet.setValue(4, 2, 'Raleigh');
+            sheet.setValue(7, 2, 'Charlotte');
+            sheet.setValue(4, 3, '001');
+            sheet.setValue(5, 3, '002');
+            sheet.setValue(6, 3, '003');
+            sheet.setValue(7, 3, '004');
+            sheet.setValue(8, 3, '005');
+            sheet.setValue(9, 3, '006');
+            sheet.setValue(11, 1, 'PA');
+            sheet.setValue(11, 2, 'Philadelphia');
+            sheet.setValue(14, 2, 'Pittsburgh');
+            sheet.setValue(11, 3, '007');
+            sheet.setValue(12, 3, '008');
+            sheet.setValue(13, 3, '009');
+            sheet.setValue(14, 3, '010');
+            sheet.setValue(15, 3, '011');
+            sheet.setValue(16, 3, '012');
+
+            sheet.setFormula(10, 4, '=SUM(E5:E10)');
+            sheet.setFormula(10, 5, '=SUM(F5:F10)');
+            sheet.setFormula(10, 6, '=SUM(G5:G10)');
+            sheet.setFormula(10, 7, '=SUM(H5:H10)');
+            sheet.setFormula(10, 8, '=SUM(I5:I10)');
+            sheet.setFormula(10, 9, '=SUM(J5:J10)');
+
+            sheet.setFormula(17, 4, '=SUM(E12:E17)');
+            sheet.setFormula(17, 5, '=SUM(F12:F17)');
+            sheet.setFormula(17, 6, '=SUM(G12:G17)');
+            sheet.setFormula(17, 7, '=SUM(H12:H17)');
+            sheet.setFormula(17, 8, '=SUM(I12:I17)');
+            sheet.setFormula(17, 9, '=SUM(J12:J17)');
+
+            for (var i = 0; i < 14; i++) {
+                sheet.setFormula(4 + i, 10, '=SUM(E' + (5 + i).toString() + ':J' + (5 + i).toString() + ')');
+            }
+
+            sheet.setFormula(18, 4, '=E11+E18');
+            sheet.setFormula(18, 5, '=F11+F18');
+            sheet.setFormula(18, 6, '=G11+G18');
+            sheet.setFormula(18, 7, '=H11+H18');
+            sheet.setFormula(18, 8, '=I11+I18');
+            sheet.setFormula(18, 9, '=J11+J18');
+            sheet.setFormula(18, 10, '=K11+K18');
+
+            sheet.getRange(1, 1, 3, 10).backColor('#D9D9FF');
+            sheet.getRange(4, 1, 15, 3).backColor('#D9FFD9');
+            sheet.getRange(1, 1, 3, 10).hAlign(spreadNS.HorizontalAlign.center);
+
+            sheet.getRange(1, 1, 18, 10).setBorder(new spreadNS.LineBorder('Black', spreadNS.LineStyle.thin), {
+                all: true
+            });
+            sheet.getRange(4, 4, 3, 6).setBorder(new spreadNS.LineBorder('Black', spreadNS.LineStyle.dotted), {
+                inside: true
+            });
+            sheet.getRange(7, 4, 3, 6).setBorder(new spreadNS.LineBorder('Black', spreadNS.LineStyle.dotted), {
+                inside: true
+            });
+            sheet
+                .getRange(11, 4, 3, 6)
+                .setBorder(new spreadNS.LineBorder('Black', spreadNS.LineStyle.dotted), {
+                    inside: true
+                });
+            sheet
+                .getRange(14, 4, 3, 6)
+                .setBorder(new spreadNS.LineBorder('Black', spreadNS.LineStyle.dotted), {
+                    inside: true
+                });
+
+            fillSampleData(sheet, new spreadNS.Range(4, 4, 6, 6));
+            fillSampleData(sheet, new spreadNS.Range(11, 4, 6, 6));
+        }
+
+        function fillSampleData(sheet, range) {
+            for (var i = 0; i < range.rowCount; i++) {
+                for (var j = 0; j < range.colCount; j++) {
+                    sheet.setValue(range.row + i, range.col + j, Math.ceil(Math.random() * 300));
+                }
+            }
+        }
+        $("[data-click=toggle]").on('click', function(e) {
+            var $target = $(e.currentTarget).parent();
+            $target.toggleClass("hidden");
+        });
+    </script>
+</body>
+
+</html>

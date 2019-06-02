@@ -1,0 +1,117 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/plugins/gc.spread.sheets.barcode.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+
+
+.sample-tutorial {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+</style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div id="ss" class="sample-tutorial"></div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById('ss'), {
+                sheetCount: 1
+            });
+            initSpread(spread);
+        };
+
+        function initSpread(spread) {
+            var sheet = spread.getSheet(0);
+            spread.suspendPaint();
+
+            _initBasicSheet(sheet);
+
+            spread.resumePaint();
+        }
+
+        function _initBasicSheet(sheet) {
+            sheet.name('customSheet');
+
+            _setData(sheet);
+            _setStyle(sheet);
+
+            for (var row = 3; row < 6; row++) {
+                sheet.setFormula(row, 3, '=BC_EAN8(C' + (row + 1) + ')');
+                sheet.setFormula(row, 4, '=BC_EAN8(C' + (row + 1) + ',,,0)');
+                sheet.setFormula(row, 5, '=BC_EAN8(C' + (row + 1) + ',,,,"top")');
+            }
+            sheet.setValue(5, 6, 'No EAN-8 generated, because the last digit is check-sum digit and it is invalid');
+        }
+
+        function _setData(sheet) {
+            var pos = [1, 2, 6];
+            var dataArray = [
+                ['Value length is 7', 4137962],
+                ['Value length is 8', 81424863],
+                ['Value length is 8', 81424865]
+            ];
+
+            sheet.setArray(1, 1, dataArray);
+            sheet.setArray(3, 1, dataArray);
+
+            for (var i = 0; i < pos.length; i++) {
+                sheet.addSpan(1, pos[i], 2, 1);
+            }
+
+            sheet.addSpan(1, 3, 1, 3);
+            sheet.setValue(1, 1, 'Name');
+            sheet.setValue(1, 2, 'Number');
+            sheet.setValue(1, 3, 'EAN-8');
+            sheet.setValue(1, 6, 'Explain');
+            sheet.setValue(2, 3, 'Default');
+            sheet.setValue(2, 4, 'Change showLabel');
+            sheet.setValue(2, 5, 'Change labelPosition');
+        }
+
+        function _setStyle(sheet) {
+            sheet.setColumnWidth(0, 20);
+
+            for (var row = 3; row < 6; row++) {
+                sheet.setRowHeight(row, 100);
+            }
+
+            for (var col = 1; col < 7; col++) {
+                sheet.setColumnWidth(col, 200);
+            }
+
+            sheet
+                .getRange(1, 1, 2, 6)
+                .foreColor('#000')
+                .backColor('#FFF3CE')
+                .setBorder(new GC.Spread.Sheets.LineBorder('orange', GC.Spread.Sheets.LineStyle.thin), {
+                    all: true
+                });
+
+            sheet
+                .getRange(1, 1, 5, 6)
+                .vAlign(GC.Spread.Sheets.VerticalAlign.center)
+                .hAlign(GC.Spread.Sheets.HorizontalAlign.center)
+                .setBorder(new GC.Spread.Sheets.LineBorder('orange', GC.Spread.Sheets.LineStyle.medium), {
+                    outline: true
+                });
+
+            sheet.getCell(5, 6).foreColor('red').wordWrap(true);
+        }
+    </script>
+</body>
+
+</html>

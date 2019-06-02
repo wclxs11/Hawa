@@ -1,0 +1,28 @@
+#page-content-wrapper .content .container-wrapper-page {
+    display: flex;
+    -webkit-box-flex: 1;
+    flex: 1;
+    overflow-y: auto;
+}
+.mainContent {
+    width: 100%;
+}
+.linkDemo {
+    padding: 2em;
+}
+.linkDemo-item {
+    padding: 0 1em;
+    margin-right: 2em;
+    margin-bottom: 2em;
+    display: inline-block;
+}
+.linkDemo-item img {
+    padding: 1em;
+    border: 1px solid #ddd;
+}
+.linkDemo-item h4 {
+    text-align: center;
+}
+.linkDemo-item p {
+    text-align: center;
+}

@@ -1,0 +1,561 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+.sample-options {float: right;height: 100%;}
+.options-toggle {display: none;}
+@media only screen and (max-width: 768px) {
+.options-toggle {display: block !important;top: 20px;left: -30px;width: 30px;height: 30px;position: absolute;background-color: #86bd00;line-height: 30px;text-align: center;padding: 4px;box-sizing: border-box;color: #fff;}
+.options-container {width: 280px !important;overflow: auto;height: 100%;padding: 22px;box-sizing: border-box;}
+.sample-spreadsheets {width: 100% !important;height: 100%;overflow: hidden;float: left;}
+.sample-options {right: 0;padding: 0 !important;overflow: visible !important; position: absolute;box-shadow: 0 0 3px 0 rgba(0, 0, 0, .25);transition: right .25s ease-in-out;z-index: 1000;}
+.sample-options.hidden {right: -280px;}
+}
+
+.sample-tutorial {
+     position: relative;
+     height: 100%;
+     overflow: hidden;
+}
+
+.sample-spreadsheets {
+    width: calc(100% - 280px);
+    height: 100%;
+    overflow: hidden;
+    float: left;
+}
+
+.options-container {
+    float: right;
+    width: 280px;
+    padding: 12px;
+    height: 100%;
+    box-sizing: border-box;
+    background: #fbfbfb;
+    overflow: auto;
+}
+
+.option-row {
+    font-size: 14px;
+    padding: 5px;
+    margin-top: 5px;
+}
+
+.normal-input {
+    display: block;
+    padding: 4px 6px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+select {
+    display: block;
+    padding: 4px 6px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+input[type = checkbox] {
+    display: inline-block;
+    width: auto;
+}
+</style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div id="ss" class="sample-spreadsheets"></div>
+        <div class="sample-options">
+            <div class="options-toggle" role="button" data-click="toggle">
+                <svg fill="currentColor" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
+                </svg>
+            </div>
+
+            <div class="options-container">
+                <p>
+                    Select a cell or range of cells in the sheet then use the options below to create a data validator for that cell(s). You can also set the input message that displays when the user tries to edit the cell(s) as well as the error message that shows if the input does not fit the conditions.
+                </p>
+                <div class="option-row">
+                    <select id="validatorTypes">
+                        <option value="DateValidator" selected>DateValidator</option>
+                        <option value="FormulaListValidator">FormulaListValidator</option>
+                        <option value="FormulaValidator">FormulaValidator</option>
+                        <option value="ListValidator">ListValidator</option>
+                        <option value="NumberValidator">NumberValidator</option>
+                        <option value="TextLengthValidator">TextLengthValidator</option>
+                    </select>
+                </div>
+                <div id="validatorTab1">
+                    <div class="option-row">
+                        <select id="validatorComparisonOperator">
+                            <option value="6" selected>Between</option>
+                            <option value="7">NotBetween</option>
+                            <option value="0">EqualTo</option>
+                            <option value="1">NotEqualTo</option>
+                            <option value="2">GreaterThan</option>
+                            <option value="4">LessThan</option>
+                            <option value="3">GreaterThanOrEqualTo</option>
+                            <option value="5">LessThanOrEqualTo</option>
+                        </select>
+                    </div>
+                    <div class="option-row">
+                        <input class="normal-input" id="txtValidatorValue1" type="text" placeholder="Value1" />
+                    </div>
+                    <div class="option-row">
+                        <input class="normal-input" id="txtValidatorValue2" type="text" placeholder="Value2" />
+                    </div>
+                    <div class="option-row" id="isIntTab">
+                        <input class="normal-input" id="chkIsInteger" type="checkbox" /><label for="chkIsInteger">Is Integer</label>
+                    </div>
+                </div>
+                <div class="option-row" id="validatorTab2">
+                    <input class="normal-input" type="text" id="txtValidatorValue" placeholder="Value1" />
+                </div>
+                <div class="option-row" id="validatorTab3">
+                    <input class="normal-input" type="text" id="txtListValidatorValue" placeholder="(eg:1,2,3,4,5)" />
+                    <input class="normal-input" type="checkbox" id="ckbIncellDropDown" checked="checked" />
+                    <label for="ckbIncellDropDown">Show In-Cell DropDown</label>
+                </div>
+                <div class="option-row">
+                    <input class="normal-input" type="checkbox" checked="checked" id="ckbShowInputMessage" />
+                    <label for="ckbShowInputMessage">Show InputMessage</label>
+                </div>
+                <div class="option-row">
+                    <label>Title:</label>
+                    <input class="normal-input" type="text" id="txtInputTitle" placeholder="Title" />
+                </div>
+                <div class="option-row">
+                    <label>Input Message:</label>
+                    <input class="normal-input" type="text" id="txtInputMessage" placeholder="Input Message" />
+                </div>
+                <div class="option-row">
+                    <input class="normal-input" id="chkShowError" type="checkbox" />
+                    <label for="chkShowError">ShowErrorMessage</label>
+                </div>
+                <div class="option-row">
+                    <input class="normal-input" id="chkValidatorIgnoreBlank" type="checkbox" />
+                    <label for="chkValidatorIgnoreBlank">IgnoreBlank</label>
+                </div>
+                <div class="option-row">
+                    <input class="normal-input" id="txtErrorTitle" type="text" placeholder="ErrorTitle" />
+                </div>
+                <div class="option-row">
+                    <input class="normal-input" id="txtErrorMessage" type="text" placeholder="ErrorMessage" />
+                </div>
+                <div class="option-row">
+                    <select id="validatorErrorStyles">
+                        <option value="0" selected>Stop</option>
+                        <option value="1">Warning</option>
+                        <option value="2">Information</option>
+                    </select>
+                </div>
+                <div class="option-row">
+                    <label>Custom HighlightStyle:</label>
+                    <select id="highlightType">
+                        <option selected="selected" value="circle" data-bind="text: res.dataValidationDialog.circle">
+                            Circle
+                        </option>
+                        <option value="dogear" data-bind="text: res.dataValidationDialog.dogear">
+                            Dogear
+                        </option>
+                        <option value="icon" data-bind="text: res.dataValidationDialog.icon">
+                            Icon
+                        </option>
+                    </select>
+                </div>
+                <div class="option-row">
+                    <input class="normal-input" id="highlightColor" type="text" placeholder="HighlightColor" />
+                </div>
+                <div id="dogear-position" class="option-row">
+                    <label>Dogear Position:</label>
+                    <select id="dogearPositionOption">
+                        <option value="Top Left" data-bind="text: res.dataValidationDialog.topLeft">
+                            Top Left
+                        </option>
+                        <option value="Top Right" data-bind="text: res.dataValidationDialog.topRight">
+                            Top Right
+                        </option>
+                        <option value="Bottom Right" data-bind="text: res.dataValidationDialog.bottomRight">
+                            Bottom Right
+                        </option>
+                        <option value="Bottom Left" data-bind="text: res.dataValidationDialog.bottomLeft">
+                            Bottom Left
+                        </option>
+                    </select>
+                </div>
+                <div id="icon-position" class="option-row">
+                    <label>Icon Position:</label>
+                    <select id="iconPositionOption">
+                        <option value="Outside Left" data-bind="text: res.dataValidationDialog.outsideLeft">
+                            Outside Left
+                        </option>
+                        <option value="Outside Right" data-bind="text: res.dataValidationDialog.outsideRight">
+                            Outside Right
+                        </option>
+                    </select>
+                </div>
+                <div id="iconFile" class="option-row">
+                    <input id="highlighticon" type="file" accept="image/*">
+                </div>
+                <div class="option-row">
+                    <input class="normal-input" id="btnSetValidator" type="button" value="Set Validator" />
+                </div>
+                <div class="option-row">
+                    <input class="normal-input" id="btnClearValidator" type="button" value="Clear Validator" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var spreadNS = GC.Spread.Sheets;
+
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"), {
+                sheetCount: 2
+            });
+            initSpread(spread);
+        };
+
+        function initSpread(spread) {
+            var self = this;
+            var sheet = spread.getSheet(0);
+            spread.options.highlightInvalidData = true;
+
+            var validatorTypes = "DateValidator";
+
+            _getElementById("validatorTab2").style.display = 'none';
+            _getElementById("validatorTab3").style.display = 'none';
+            _getElementById("isIntTab").style.display = 'none';
+            _getElementById("dogear-position").style.display = 'none';
+            _getElementById("icon-position").style.display = 'none';
+            _getElementById("iconFile").style.display = 'none';
+
+            var updateValidatorTab = function(validatorTypes) {
+                switch (validatorTypes) {
+                    case "DateValidator":
+                        _getElementById("validatorTab1").style.display = 'block';
+                        _getElementById("isIntTab").style.display = 'none';
+                        _getElementById("validatorTab2").style.display = 'none';
+                        _getElementById("validatorTab3").style.display = 'none';
+                        break;
+                    case "ListValidator":
+                        _getElementById("validatorTab3").style.display = 'block';
+                        _getElementById("validatorTab2").style.display = 'none';
+                        _getElementById("validatorTab1").style.display = 'none';
+                        break;
+                    case "FormulaListValidator":
+                    case "FormulaValidator":
+                        _getElementById("validatorTab2").style.display = 'block';
+                        _getElementById("validatorTab1").style.display = 'none';
+                        _getElementById("validatorTab3").style.display = 'none';
+                        break;
+                    case "NumberValidator":
+                        _getElementById("validatorTab1").style.display = 'block';
+                        _getElementById("isIntTab").style.display = 'block';
+                        _getElementById("validatorTab2").style.display = 'none';
+                        _getElementById("validatorTab3").style.display = 'none';
+                        break;
+                    case "TextLengthValidator":
+                        _getElementById("validatorTab1").style.display = 'block';
+                        _getElementById("isIntTab").style.display = 'none';
+                        _getElementById("validatorTab2").style.display = 'none';
+                        _getElementById("validatorTab3").style.display = 'none';
+                        break;
+                }
+            };
+
+            _getElementById("highlighticon").addEventListener("change", function() {
+                var file = this.files[0];
+                var reader = new FileReader();
+                if (file) {
+                    reader.readAsDataURL(file);
+                    reader.onloadend = function(e) {
+                        self.imageBase64 = this.result;
+                    };
+                }
+            });
+
+            _getElementById("highlightType").addEventListener('change', function() {
+                switch (this.value) {
+                    case 'circle':
+                        {
+                            _getElementById("dogear-position").style.display = 'none';
+                            _getElementById("icon-position").style.display = 'none';
+                            _getElementById("iconFile").style.display = 'none';
+                            break;
+                        }
+                    case 'dogear':
+                        {
+                            _getElementById("dogear-position").style.display = '';
+                            _getElementById("icon-position").style.display = 'none';
+                            _getElementById("iconFile").style.display = 'none';
+                            break;
+                        }
+                    case 'icon':
+                        {
+                            _getElementById("dogear-position").style.display = 'none';
+                            _getElementById("icon-position").style.display = '';
+                            _getElementById("iconFile").style.display = '';
+                            break;
+                        }
+                }
+            });
+
+            _getElementById("validatorTypes").addEventListener('change', function() {
+                validatorTypes = this.value;
+                updateValidatorTab(validatorTypes);
+            });
+
+            _getElementById("validatorComparisonOperator").addEventListener('change', function() {
+                var operatorType = this.value;
+                switch (operatorType) {
+                    case '6':
+                    case '7':
+                        _getElementById("txtValidatorValue2").style.display = 'block';
+                        break;
+                    default:
+                        _getElementById("txtValidatorValue2").style.display = 'none';
+                        break;
+                }
+            });
+
+            _getElementById("btnSetValidator").addEventListener('click', function() {
+                var gcdv = spreadNS.DataValidation;
+                var ddv = null;
+                var v1 = _getElementById("txtValidatorValue1").value;
+                var v2 = _getElementById("txtValidatorValue2").value;
+                switch (validatorTypes) {
+                    case "DateValidator":
+                        ddv = gcdv.createDateValidator(parseInt(_getElementById("validatorComparisonOperator").value), new Date(v1), new Date(v2));
+                        break;
+                    case "FormulaListValidator":
+                        ddv = gcdv.createFormulaListValidator(_getElementById("txtValidatorValue").value);
+                        break;
+                    case "FormulaValidator":
+                        ddv = gcdv.createFormulaValidator(_getElementById("txtValidatorValue").value);
+                        break;
+                    case "ListValidator":
+                        ddv = gcdv.createListValidator(_getElementById("txtListValidatorValue").value);
+                        ddv.inCellDropdown(_getElementById("ckbIncellDropDown").checked);
+                        break;
+                    case "NumberValidator":
+                        if (_getElementById("chkIsInteger").checked) {
+                            ddv = gcdv.createNumberValidator(parseInt(_getElementById("validatorComparisonOperator").value),
+                                isNaN(v1) ? v1 : parseInt(v1),
+                                isNaN(v2) ? v2 : parseInt(v2),
+                                true);
+                        } else {
+                            ddv = gcdv.createNumberValidator(parseInt(_getElementById("validatorComparisonOperator").value),
+                                isNaN(v1) ? v1 : parseFloat(v1),
+                                isNaN(v2) ? v2 : parseFloat(v2),
+                                false);
+                        }
+                        break;
+                    case "TextLengthValidator":
+                        ddv = gcdv.createTextLengthValidator(parseInt(_getElementById("validatorComparisonOperator").value),
+                            isNaN(v1) ? v1 : parseInt(v1),
+                            isNaN(v2) ? v2 : parseInt(v2));
+                        break;
+                }
+
+                if (ddv != null) {
+                    ddv.errorMessage(_getElementById("txtErrorMessage").value);
+                    ddv.errorStyle(parseInt(_getElementById("validatorErrorStyles").value));
+                    ddv.errorTitle(_getElementById("txtErrorTitle").value);
+                    ddv.showErrorMessage(_getElementById("chkShowError").checked);
+                    ddv.ignoreBlank(_getElementById("chkValidatorIgnoreBlank").checked);
+                    ddv.showInputMessage(_getElementById("ckbShowInputMessage").checked);
+                    ddv.inputTitle(_getElementById("txtInputTitle").value);
+                    ddv.inputMessage(_getElementById("txtInputMessage").value);
+                    var highLightStyle = _getElementById("highlightType").value;
+                    var dogearPosition = _getElementById("dogearPositionOption").value;
+                    var iconPosition = _getElementById("iconPositionOption").value;
+                    var highlightStyleColor = _getElementById("highlightColor").value;
+                    if (highLightStyle === "circle") {
+                        ddv.highlightStyle({
+                            type: GC.Spread.Sheets.DataValidation.HighlightType.circle,
+                            color: highlightStyleColor
+                        });
+                    } else if (highLightStyle === "dogear" && dogearPosition === "Top Left") {
+                        ddv.highlightStyle({
+                            type: GC.Spread.Sheets.DataValidation.HighlightType.dogEar,
+                            color: highlightStyleColor,
+                            position: GC.Spread.Sheets.DataValidation.HighlightPosition.topLeft
+                        });
+                    } else if (highLightStyle === "dogear" && dogearPosition === "Top Right") {
+                        ddv.highlightStyle({
+                            type: GC.Spread.Sheets.DataValidation.HighlightType.dogEar,
+                            color: highlightStyleColor,
+                            position: GC.Spread.Sheets.DataValidation.HighlightPosition.topRight
+                        });
+                    } else if (highLightStyle === "dogear" && dogearPosition === "Bottom Left") {
+                        ddv.highlightStyle({
+                            type: GC.Spread.Sheets.DataValidation.HighlightType.dogEar,
+                            color: highlightStyleColor,
+                            position: GC.Spread.Sheets.DataValidation.HighlightPosition.bottomLeft
+                        });
+                    } else if (highLightStyle === "dogear" && dogearPosition === "Bottom Right") {
+                        ddv.highlightStyle({
+                            type: GC.Spread.Sheets.DataValidation.HighlightType.dogEar,
+                            color: highlightStyleColor,
+                            position: GC.Spread.Sheets.DataValidation.HighlightPosition.bottomRight
+                        });
+                    } else if (highLightStyle === "icon" && iconPosition === "Outside Left") {
+                        ddv.highlightStyle({
+                            type: GC.Spread.Sheets.DataValidation.HighlightType.icon,
+                            color: highlightStyleColor,
+                            position: GC.Spread.Sheets.DataValidation.HighlightPosition.outsideLeft,
+                            image: self.imageBase64
+                        });
+                    } else if (highLightStyle === "icon" && iconPosition === "Outside Right") {
+                        ddv.highlightStyle({
+                            type: GC.Spread.Sheets.DataValidation.HighlightType.icon,
+                            color: highlightStyleColor,
+                            position: GC.Spread.Sheets.DataValidation.HighlightPosition.outsideRight,
+                            image: self.imageBase64
+                        });
+                    }
+                    var ss = GC.Spread.Sheets.findControl(document.getElementById('ss'));
+                    var sheet = ss.getActiveSheet();
+                    sheet.suspendPaint();
+                    var sels = sheet.getSelections();
+                    for (var i = 0; i < sels.length; i++) {
+                        var sel = getActualRange(sheet, sels[i]);
+                        sheet.setDataValidator(sel.row, sel.col, sel.rowCount, sel.colCount, ddv);
+                    }
+                    sheet.resumePaint();
+                }
+            });
+
+            _getElementById("chkValidatorIgnoreBlank").addEventListener('change', function() {
+                var ss = GC.Spread.Sheets.findControl(document.getElementById('ss'));
+                var sheet = ss.getActiveSheet();
+                var sels = sheet.getSelections();
+                for (var i = 0; i < sels.length; i++) {
+                    var sel = getActualRange(sheet, sels[i]);
+                    for (var r = 0; r < sel.rowCount; r++) {
+                        for (var c = 0; c < sel.colCount; c++) {
+                            var dv = sheet.getDataValidator(sel.row + r, sel.col + c);
+                            if (dv) {
+                                dv.ignoreBlank(this.checked);
+                            }
+                        }
+                    }
+                }
+            });
+
+            _getElementById("chkShowError").addEventListener('change', function() {
+                var ss = GC.Spread.Sheets.findControl(document.getElementById('ss'));
+                var sheet = ss.getActiveSheet();
+                var checked = _getElementById("chkShowError").checked;
+                if (checked) {
+                    ss.bind(spreadNS.Events.ValidationError, function(event, data) {
+                        var dv = data.validator;
+                        if (dv) {
+                            alert(dv.errorMessage());
+                        }
+                    });
+                } else {
+                    ss.unbind(spreadNS.Events.ValidationError);
+                }
+            });
+
+            _getElementById("btnClearValidator").addEventListener('click', function() {
+                var sheet = spread.getActiveSheet();
+
+                var sels = sheet.getSelections();
+
+                for (var i = 0; i < sels.length; i++) {
+                    var sel = getActualRange(sheet, sels[i]);
+                    sheet.setDataValidator(sel.row, sel.col, sel.rowCount, sel.colCount, null);
+                }
+            });
+
+            spread.bind(GC.Spread.Sheets.Events.EnterCell, function(e, args) {
+                var sheet = spread.getActiveSheet();
+                var activeRow = sheet.getActiveRowIndex();
+                var activeCol = sheet.getActiveColumnIndex();
+                var dataValidator = sheet.getDataValidator(activeRow, activeCol);
+                var validatorTypes = _getElementById("validatorTypes");
+                if (dataValidator) {
+                    var type = dataValidator.type();
+                    switch (type) {
+                        case 1:
+                        case 2:
+                            validatorTypes = "NumberValidator";
+                            break;
+                        case 3:
+                            var condition = dataValidator.condition();
+                            if (condition && condition.formula()) {
+                                validatorTypes = "FormulaListValidator";
+                            } else {
+                                validatorTypes = "ListValidator";
+                            }
+                            break;
+                        case 4:
+                            validatorTypes = "DateValidator";
+                            break;
+                        case 6:
+                            validatorTypes = "TextLengthValidator";
+                            break;
+                        case 7:
+                            validatorTypes = "FormulaValidator";
+                            break;
+                    }
+                    validatorTypes.value = validatorTypes;
+                    updateValidatorTab(validatorTypes);
+                    _getElementById("validatorComparisonOperator").value = dataValidator.comparisonOperator();
+                    _getElementById("txtValidatorValue1").value = dataValidator.value1();
+                    _getElementById("txtValidatorValue2").value = dataValidator.value2();
+                    _getElementById("txtValidatorValue").value = dataValidator.value1();
+                    _getElementById("txtListValidatorValue").value = dataValidator.value1();
+                    _getElementById("chkIsInteger").setAttribute('checked', type === 1);
+                    _getElementById("ckbShowInputMessage").setAttribute('checked', dataValidator.showInputMessage());
+                    _getElementById("txtInputTitle").value = dataValidator.inputTitle();
+                    _getElementById("txtInputMessage").value = dataValidator.inputMessage();
+                    _getElementById("chkShowError").setAttribute('checked', dataValidator.showErrorMessage());
+                    _getElementById("chkValidatorIgnoreBlank").setAttribute('checked', dataValidator.ignoreBlank());
+                    _getElementById("txtErrorTitle").value = dataValidator.errorTitle();
+                    _getElementById("txtErrorMessage").value = dataValidator.errorMessage();
+                    _getElementById("validatorErrorStyles").value = dataValidator.errorStyle();
+                }
+            });
+        }
+
+        function getActualRange(sheet, range) {
+            var row = range.row,
+                rowCount = range.rowCount;
+            if (row === -1) {
+                row = 0;
+                rowCount = sheet.getRowCount();
+            }
+            var col = range.col,
+                colCount = range.colCount;
+            if (col === -1) {
+                col = 0;
+                colCount = sheet.getColumnCount();
+            }
+            return new GC.Spread.Sheets.Range(row, col, rowCount, colCount);
+        }
+
+        function _getElementById(id) {
+            return document.getElementById(id);
+        }
+        $("[data-click=toggle]").on('click', function(e) {
+            var $target = $(e.currentTarget).parent();
+            $target.toggleClass("hidden");
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,163 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/plugins/gc.spread.sheets.shapes.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+
+.sample-tutorial {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+.sample-spreadsheets {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    float: left;
+}
+</style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div id="ss" class="sample-spreadsheets"></div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"), {
+                sheetCount: 7
+            });
+            initSpread(spread);
+        };
+
+        function initSpread(spread) {
+            var shapeCategoary = [{
+                    type: ['rectangle',
+                        'roundedRectangle',
+                        'snip1Rectangle',
+                        'snip2SameRectangle',
+                        'snip2DiagRectangle',
+                        'snipRoundRectangle',
+                        'round1Rectangle',
+                        'round2SameRectangle',
+                    ],
+                    desc: "Rectangles",
+                },
+                {
+                    type: ['oval', 'hexagon', 'cube', 'smileyFace', 'heart', 'gear9', 'actionButtonMovie', 'funnel'],
+                    desc: "Basic Shapes",
+                },
+                {
+                    type: [
+                        'rightArrow',
+                        'leftArrow',
+                        'upArrow',
+                        'downArrow',
+                        'leftRightArrow',
+                        'upDownArrow',
+                        'quadArrow',
+                        'leftRightUpArrow',
+                    ],
+                    desc: "Block Arrows",
+                }, {
+                    type: [
+                        'mathPlus',
+                        'mathMinus',
+                        'mathMultiply',
+                        'mathDivide',
+                        'mathEqual',
+                        'mathNotEqual'
+                    ],
+                    desc: "Equation Shapes",
+                }, {
+                    type: [
+                        'flowchartProcess',
+                        'flowchartAlternateProcess',
+                        'flowchartDecision',
+                        'flowchartData',
+                        'flowchartPredefinedProcess',
+                        'flowchartInternalStorage',
+                        'flowchartDocument',
+                        'flowchartMultidocument',
+                    ],
+                    desc: "Flowchart",
+                }, {
+                    type: [
+                        'shape8pointStar',
+                        'explosion2',
+                        'shape4pointStar',
+                        'shape5pointStar',
+                        'star6Point',
+                        'star7Point',
+                        'shape8pointStar',
+                        'star10Point',
+                    ],
+                    desc: "Stars and Banners",
+                }, {
+                    type: [
+                        'rectangularCallout',
+                        'roundedRectangularCallout',
+                        'ovalCallout',
+                        'cloudCallout',
+                        'lineCallout2',
+                        'lineCallout3',
+                        'lineCallout4',
+                        'lineCallout2AccentBar',
+                    ],
+                    desc: "Callouts",
+                }
+            ];
+            spread.suspendPaint();
+            var sheets = spread.sheets;
+            for (var i = 0; i < shapeCategoary.length; i++) {
+                var sheet = sheets[i];
+                initSheet(sheet, shapeCategoary[i].desc);
+                initShape(sheet, shapeCategoary[i].type); //add shape
+            }
+            spread.options.tabStripRatio = 0.8;
+            spread.resumePaint();
+        }
+
+        function initSheet(sheet, sheetName) {
+            sheet.name(sheetName);
+        }
+
+        function initShape(sheet, shapeType) {
+            var left = 10,
+                top = 10,
+                tempX = 0,
+                tempY = 0,
+                tempShape = null,
+                shapeName, shapeStyle;
+            for (var i = 0, len = shapeType.length; i < len; i++) {
+                shapeName = shapeType[i];
+                if (GC.Spread.Sheets.Shapes.AutoShapeType[shapeName]) {
+                    tempShape = sheet.shapes.add(shapeName, GC.Spread.Sheets.Shapes.AutoShapeType[shapeName], left + tempX * 180, top + tempY, 150, 150);
+                    tempShape.text(shapeName);
+                    shapeStyle = tempShape.style();
+                    shapeStyle.textEffect.color = "red";
+                    shapeStyle.textFrame.hAlign = GC.Spread.Sheets.HorizontalAlign.center;
+                    shapeStyle.textFrame.vAlign = GC.Spread.Sheets.VerticalAlign.center;
+                    tempShape.style(shapeStyle);
+                    tempX++;
+                    if (tempX === 4) {
+                        tempX = 0;
+                        tempY += 180;
+                    }
+                }
+            }
+            sheet.resumePaint();
+        }
+    </script>
+</body>
+
+</html>

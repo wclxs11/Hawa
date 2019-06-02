@@ -1,0 +1,161 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../css/spread/gc.spread.sheets.excel2013white.12.1.0.css">
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../js/spread/gc.spread.sheets.all.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/plugins/gc.spread.sheets.shapes.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/resources/zh/gc.spread.sheets.resources.zh.12.1.0.min.js" type="text/javascript"></script>
+    <script src="../js/spread/license.js" type="text/javascript"></script>
+    <style>*{-webkit-tap-highlight-color: rgba(0,0,0,0);}
+
+.sample-tutorial {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+.sample-spreadsheets {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    float: left;
+}
+</style>
+</head>
+
+<body style="margin:8px;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;">
+    <div class="sample-tutorial">
+        <div id="ss" class="sample-spreadsheets"></div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"), {
+                sheetCount: 1
+            });
+            initSpread(spread);
+        };
+
+        function initSpread(spread) {
+            var shapeData = [{
+                    type: 'straight',
+                },
+                {
+                    type: 'straight',
+                    endArrowhead: {
+                        style: "triangle",
+                        width: 'medium',
+                        length: 'medium',
+
+                    }
+                },
+                {
+                    type: 'straight',
+                    beginArrowhead: {
+                        style: "stealth",
+                        width: 'wide',
+                        length: 'wide',
+
+                    }
+                },
+                {
+                    beginArrowhead: {
+                        style: "stealth",
+                        width: 'medium',
+                        length: 'medium',
+                    },
+                    type: 'straight',
+                    endArrowhead: {
+                        style: "diamond",
+                        width: 'wide',
+                        length: 'wide',
+                    }
+                },
+
+                {
+                    type: 'elbow',
+                },
+                {
+                    type: 'elbow',
+                    endArrowhead: {
+                        style: "oval",
+                        width: 'medium',
+                        length: 'medium',
+                    },
+                },
+                {
+                    type: 'elbow',
+                    beginArrowhead: {
+                        style: "oval",
+                        width: 'wide',
+                        length: 'wide',
+                    },
+                },
+                {
+                    beginArrowhead: {
+                        style: "open",
+                        width: 'medium',
+                        length: 'medium',
+                    },
+                    type: 'elbow',
+                    endArrowhead: {
+                        style: "triangle",
+                        width: 'medium',
+                        length: 'medium',
+                    }
+                }
+            ];
+            spread.suspendPaint();
+            var sheet = spread.getSheet(0);
+            sheet.name("ConnectorShape");
+            for (var i = 0; i < shapeData.length; i++) {
+                initShape(sheet, shapeData[i], i); //add connectorShape
+            }
+            sheet.setValue(1, 4, 'stright');
+            sheet.setValue(1, 10, 'elbow');
+            spread.options.tabStripRatio = 0.8;
+            spread.resumePaint();
+        }
+
+        function initShape(sheet, shapeData, index) {
+            var colors = ["red", "blue", "black", "pink", "green", "orange"];
+            var arrowheadStyle = GC.Spread.Sheets.Shapes.ArrowheadStyle;
+            var arrowheadLength = GC.Spread.Sheets.Shapes.ArrowheadLength;
+            var arrowheadWidth = GC.Spread.Sheets.Shapes.ArrowheadWidth;
+            var beginX = 200,
+                endX = 400;
+            if (shapeData.type === 'elbow') {
+                beginX = 550;
+                endX = 750;
+                index = index % 4;
+            }
+            var connectorShape = sheet.shapes.addConnector('', GC.Spread.Sheets.Shapes.ConnectorType[shapeData.type], beginX, 120 + index * 70, endX, 80 + index * 70);
+            if (shapeData.beginArrowhead !== undefined) {
+                var connectorBeginStyle = connectorShape.style();
+                var beginLine = connectorBeginStyle.line;
+                beginLine.beginArrowheadStyle = arrowheadStyle[shapeData.beginArrowhead.style];
+                beginLine.beginArrowheadWidth = arrowheadWidth[shapeData.beginArrowhead.width];
+                beginLine.beginArrowheadLength = arrowheadLength[shapeData.beginArrowhead.length];
+                connectorShape.style(connectorBeginStyle);
+            }
+            if (shapeData.endArrowhead !== undefined) {
+                var connectorEndStyle = connectorShape.style();
+                var endLine = connectorEndStyle.line;
+                endLine.endArrowheadStyle = arrowheadStyle[shapeData.endArrowhead.style];
+                endLine.endArrowheadWidth = arrowheadWidth[shapeData.endArrowhead.width];
+                endLine.endArrowheadLength = arrowheadLength[shapeData.endArrowhead.length];
+                connectorShape.style(connectorEndStyle);
+            }
+            var connectorStyle = connectorShape.style();
+            var lineTemp = connectorStyle.line;
+            lineTemp.width = 5;
+            lineTemp.color = colors[index];
+            connectorShape.style(connectorStyle);
+        }
+    </script>
+</body>
+
+</html>
